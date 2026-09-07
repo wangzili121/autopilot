@@ -1,0 +1,50 @@
+[run]
+name = "humaneval-30b-pp2-tp1-smoke"
+sample_count = 8
+subset_seed = 20260808
+seed = 20260808
+
+[models]
+base = "models/Qwen3-Coder-30B-A3B-Instruct"
+base_source = "local"
+base_revision = "local"
+
+[runtime]
+backend = "vllm"
+device = "npu:0"
+dtype = "bfloat16"
+max_batch_size = 8
+max_batch_tokens = 4096
+max_score_batch_size = 8
+
+[vllm]
+asynchronous = true
+enable_prefix_caching = true
+exact_scoring_backend = "none"
+tensor_parallel_size = 1
+data_parallel_size = 1
+max_model_len = 4096
+
+[vllm.base]
+gpu_memory_utilization = 0.92
+max_num_seqs = 8
+max_num_batched_tokens = 4096
+
+[vllm.engine_kwargs]
+enable_chunked_prefill = true
+pipeline_parallel_size = 2
+
+[generation]
+max_new_tokens = 512
+
+[sampling]
+temperature = 1.0
+
+[conditional_is]
+candidate_count = 4
+rollout_count = 3
+rollout_design = "iid"
+block_size = 32
+reward_temperature = 0.1
+reward = "exact"
+importance_log_ratio_clip = 10.0

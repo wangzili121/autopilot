@@ -209,3 +209,15 @@ preliminary two-card baseline, not a result. No four-card job was launched on
 NPU0-3 because simultaneous sibling jobs would contaminate the topology
 comparison and risk host-level interference. The next launch waits for a clean
 window and follows `docs/CONDITIONAL_IS_MULTI_NPU_PLAN.md`.
+
+At 19:37 CST, a non-formal eight-problem `PP2 x TP1` feasibility smoke was
+started on NPU6-7 while the existing TP2 run continued on NPU4-5. This keeps the
+user allocation at four devices. The first container attempt used individual
+device remapping and failed before model allocation because the host CANN/HCCL
+stack could not discover the remapped devices. A single retry used the host's
+validated `privileged + ipc=host + ASCEND_RT_VISIBLE_DEVICES` contract.
+
+The retry initialized world size two with PP ranks zero and one, bound them to
+physical NPU6 and NPU7, and loaded 29.2025 GiB of model weights per stage. This
+proves topology startup only. It remains a concurrently executed smoke and is
+not eligible for a TP2-versus-PP2 performance claim.
