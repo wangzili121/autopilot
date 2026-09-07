@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0",
+  "space_id": "conditional-is-same-model-multinpu-v1",
+  "algorithm_id": "conditional_is",
+  "fixed_settings": {
+    "model_runner": "MRV1",
+    "base_max_num_seqs": 8,
+    "base_max_num_batched_tokens": 4096,
+    "base_memory_fraction": 0.92
+  },
+  "knobs": [
+    {
+      "name": "runtime.tensor_parallel_size",
+      "setting_name": "tensor_parallel_size",
+      "value_type": "integer",
+      "domain": {"kind": "choices", "values": [2, 4]},
+      "change_scope": "engine_restart",
+      "semantic_effect": "preserves_algorithm",
+      "tuning_layer": "static_deployment",
+      "applies_to_stages": ["candidate_generate", "rollout_generate"],
+      "description": "Tensor-parallel degree used by the shared candidate and rollout model"
+    },
+    {
+      "name": "runtime.data_parallel_size",
+      "setting_name": "data_parallel_size",
+      "value_type": "integer",
+      "domain": {"kind": "choices", "values": [1, 2]},
+      "change_scope": "engine_restart",
+      "semantic_effect": "preserves_algorithm",
+      "tuning_layer": "static_deployment",
+      "applies_to_stages": ["candidate_generate", "rollout_generate"],
+      "description": "Replica count available for sharding independent Conditional IS branches"
+    },
+    {
+      "name": "runtime.pipeline_parallel_size",
+      "setting_name": "pipeline_parallel_size",
+      "value_type": "integer",
+      "domain": {"kind": "choices", "values": [1, 2]},
+      "change_scope": "engine_restart",
+      "semantic_effect": "preserves_algorithm",
+      "tuning_layer": "static_deployment",
+      "applies_to_stages": ["candidate_generate", "rollout_generate"],
+      "description": "Layer pipeline degree for comparing model-layer staging with branch replicas"
+    }
+  ],
+  "constraints": [
+    {
+      "kind": "allowed_combinations",
+      "parameters": [
+        "runtime.tensor_parallel_size",
+        "runtime.data_parallel_size",
+        "runtime.pipeline_parallel_size"
+      ],
+      "values": [[2, 1, 1], [4, 1, 1], [2, 2, 1], [2, 1, 2]]
+    }
+  ]
+}

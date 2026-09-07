@@ -192,3 +192,20 @@ apparent `+4.20%` remains insufficient for a candidate claim.
   `artifacts/cis-small-proposal-medium2k-p32-off16k-retry-aware-replay-npu2-20260907-r8`;
 - r8 execution-readiness decision: the preceding directory's
   `execution-readiness-assessment.json`.
+
+## Normal Conditional IS Multi-NPU Preflight
+
+The project focus changed from `conditional_is_small_proposal` to normal,
+same-model `conditional_is`. A read-only host audit found:
+
+- the first server's eight NPUs were occupied by four TP2 serving instances;
+- the second server's NPU4-7 were occupied by two ongoing TP2 normal
+  Conditional IS runs, while NPU0-3 had no model allocation;
+- the HumanEval run used Qwen3-Coder-30B-A3B-Instruct, BF16, MRV1, APC,
+  chunked prefill, TP2, `C=4`, `R=3`, block 32 and maximum 512 tokens.
+
+At the audit point that run had completed 66 of 100 problems. It is an ongoing
+preliminary two-card baseline, not a result. No four-card job was launched on
+NPU0-3 because simultaneous sibling jobs would contaminate the topology
+comparison and risk host-level interference. The next launch waits for a clean
+window and follows `docs/CONDITIONAL_IS_MULTI_NPU_PLAN.md`.

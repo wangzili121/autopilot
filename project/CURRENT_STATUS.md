@@ -4,6 +4,11 @@
 
 ## 当前结论
 
+导师讨论后，近期主线已经收缩为普通同模型 `conditional_is` 的双卡和四卡优化。
+此前 small-proposal 自动调优能力保留为底座与历史证据，但不再定义近期实验空间。
+新的首要问题是比较 `TP2`、`TP4`、`DP2 x TP2` 和 `PP2 x TP2`，再实现相对
+现成 TP/DP/PP 有增量价值的 Conditional-IS 分支流水。
+
 项目已经具备自动优化控制面的主要软件骨架，也在 Conditional IS 上找到过
 有价值的配置交互和 stage wavefront 机制。但“稀疏测量驱动的自动优化器在
 真实 NPU 上用更少实验超过人工最优”这一核心产品结论尚未完成验证。
@@ -81,6 +86,7 @@ cohort，不代表可直接迁移到 medium2k 或其他算法。
 
 ## 尚未完成的关键部分
 
+0. 普通 `conditional_is` 的多卡强基线和算法感知分支流水尚未完成正式比较；
 1. `engine_batch_timeline` 还没有严格转换成真实 AIC-NPU 校准语料。
 2. 当前 AIC-NPU 示例数据是合成数据，尚无真实 bucket MAPE、排序准确率和
    OOD 拒绝结果。

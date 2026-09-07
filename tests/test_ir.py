@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import unittest
 
-from inference_autopilot.adapters import build_conditional_is_small_proposal_graph
+from inference_autopilot.adapters import (
+    build_conditional_is_graph,
+    build_conditional_is_small_proposal_graph,
+)
 from inference_autopilot.ir import InferenceGraph, IntExpr, LoopSpec, ParameterSpec, StageSpec
 
 
@@ -16,6 +19,29 @@ class IntExprTest(unittest.TestCase):
 
 
 class ConditionalISGraphTest(unittest.TestCase):
+    def test_normal_path_reuses_one_model_and_has_no_target_score(self) -> None:
+        graph = build_conditional_is_graph(
+            candidate_count=8,
+            rollout_count=3,
+            block_size=32,
+            total_length=512,
+        )
+        stages = {stage.stage_id: stage for stage in graph.stages}
+
+        self.assertEqual(graph.algorithm_id, "conditional_is")
+        self.assertEqual(graph.algorithm_semantics, "exact")
+        self.assertNotIn("target_score", stages)
+        self.assertEqual(stages["candidate_generate"].resource_role, "base_model")
+        self.assertEqual(stages["rollout_generate"].resource_role, "base_model")
+        self.assertEqual(
+            stages["rollout_generate"].multiplicity_upper_bound.evaluate(
+                graph.bindings
+            ),
+            24,
+        )
+        self.assertEqual(graph.metadata["execution_path"], "same_model_on_policy")
+        self.assertTrue(graph.metadata["generation_logprobs_reused"])
+
     def test_exact_graph_preserves_small_proposal_dependencies(self) -> None:
         graph = build_conditional_is_small_proposal_graph(
             candidate_count=4,

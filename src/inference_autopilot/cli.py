@@ -9,7 +9,10 @@ from pathlib import Path
 import sys
 from typing import Any, Sequence
 
-from inference_autopilot.adapters import build_conditional_is_small_proposal_graph
+from inference_autopilot.adapters import (
+    build_conditional_is_graph,
+    build_conditional_is_small_proposal_graph,
+)
 from inference_autopilot.calibration import (
     CalibrationPlan,
     CalibrationSpec,
@@ -252,6 +255,11 @@ def _parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     graph = subparsers.add_parser("graph", help="emit an Inference Graph IR document")
+    graph.add_argument(
+        "--algorithm",
+        choices=("conditional_is", "conditional_is_small_proposal"),
+        default="conditional_is_small_proposal",
+    )
     graph.add_argument("--candidate-count", type=int, default=4)
     graph.add_argument("--rollout-count", type=int, default=4)
     graph.add_argument("--block-size", type=int, default=16)
@@ -1035,13 +1043,23 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         if args.command == "graph":
-            graph = build_conditional_is_small_proposal_graph(
-                candidate_count=args.candidate_count,
-                rollout_count=args.rollout_count,
-                block_size=args.block_size,
-                total_length=args.total_length,
-                apply_importance_correction=not args.disable_importance_correction,
-            )
+            graph_kwargs = {
+                "candidate_count": args.candidate_count,
+                "rollout_count": args.rollout_count,
+                "block_size": args.block_size,
+                "total_length": args.total_length,
+            }
+            if args.algorithm == "conditional_is":
+                if args.disable_importance_correction:
+                    raise ValueError(
+                        "normal conditional_is is on-policy and cannot disable importance correction"
+                    )
+                graph = build_conditional_is_graph(**graph_kwargs)
+            else:
+                graph = build_conditional_is_small_proposal_graph(
+                    **graph_kwargs,
+                    apply_importance_correction=not args.disable_importance_correction,
+                )
             _write_json(graph.to_dict(), args.output)
             return 0
         if args.command == "import-results":

@@ -66,16 +66,20 @@ Install the plugin in editable mode:
 python3 -m pip install -e .
 ```
 
-Describe chang's exact Conditional IS small-proposal path:
+Describe chang's normal same-model Conditional IS path:
 
 ```bash
 inference-autopilot graph \
+  --algorithm conditional_is \
   --candidate-count 4 \
   --rollout-count 3 \
   --block-size 16 \
   --total-length 128 \
   --output conditional-is-graph.json
 ```
+
+The focused two- and four-NPU study is specified in
+[the Conditional IS multi-NPU plan](docs/CONDITIONAL_IS_MULTI_NPU_PLAN.md).
 
 Normalize existing inference-scaling results and inspect their evidence grade:
 
