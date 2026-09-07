@@ -735,6 +735,11 @@ The design is informed by recent systems work including
 [MISA-T](https://arxiv.org/abs/2608.11152). These are design inputs, not claims
 that their reported gains transfer to this workload.
 
+## Paper reading records
+
+- [Paper survey, reading index, and individual Chinese interpretations](papers/README.md)
+- [2026 autotuning survey and revised roadmap](papers/2026_AUTOTUNING_SURVEY_AND_ROADMAP.md)
+
 ## Design records
 
 - [v1 architecture and milestone gates](docs/V1_ARCHITECTURE.md)
