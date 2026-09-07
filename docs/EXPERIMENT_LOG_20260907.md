@@ -224,12 +224,16 @@ per stage. The smoke completed all eight problems and released both devices.
 Seven of eight outputs passed exact reward; mean and median per-problem latency
 were 118.8312 and 107.5987 seconds. The sample is too small for a quality claim.
 
-Five problems overlapped with the still-running TP2 baseline. Their PP2/TP2
-latency ratios were 0.8288, 0.8458, 0.8159, 0.6141, and 0.8814: a geometric
-mean of 0.7910 and median of 0.8288. The 0.6141 observation also changed output
-length from 507 to 355 tokens and is not evidence of a topology speedup. The
-other four equal- or near-equal-length observations show an initial 11.9%-18.4%
-latency reduction. This is promising feasibility evidence only: the runs were
-concurrent on sibling NPUs, only five tasks overlap, and generation trajectories
-are not fully controlled. A sequential same-device paired campaign is required
-before making a TP2-versus-PP2 performance claim.
+The TP2 baseline subsequently completed all 100 problems: 85 passed exact
+reward, with mean and median per-problem latency of 154.8484 and 107.3305
+seconds. All eight smoke problems could then be paired. Their PP2/TP2 latency
+ratios were 0.8288, 0.8458, 0.8159, 0.6141, 0.8814, 0.9739, 1.8563, and 0.8687:
+a geometric mean of 0.9138 and median of 0.8573. Output trajectories differ
+substantially in three pairs, including the fastest and slowest relative PP2
+observations. Among the four pairs with identical output-token counts, the
+geometric mean ratio is 0.8396; allowing a four-token difference gives five
+pairs and a 0.8478 ratio. This is promising feasibility evidence only: the runs
+were concurrent on sibling NPUs, the sample is small, and generation
+trajectories are not fully controlled. A sequential same-device paired campaign
+with repeated draws and work-normalized metrics is required before making a
+TP2-versus-PP2 performance claim.
