@@ -1,0 +1,126 @@
+{
+  "schema_version": "1.0",
+  "campaign_id": "cis-small-proposal-short-p16-capacity-128-384-20260905-r1",
+  "strong_baseline": true,
+  "protocol": {
+    "pattern": "ABBA",
+    "blocks": 1,
+    "pair_seeds": [2026090571, 2026090572]
+  },
+  "semantic_contract": {
+    "algorithm_id": "conditional_is_small_proposal",
+    "semantic_class": "exact",
+    "graph_sha256": "a46acdc960d12f5dab0af3515d083f1cf6780af34870e1febc01f85e86249cea",
+    "invariants": {
+      "candidate_count": 8,
+      "rollout_count": 3,
+      "block_size": 48,
+      "total_length": 192,
+      "apply_importance_correction": true,
+      "sampler": "native_ascend_categorical",
+      "model_runner": "MRV1",
+      "automatic_prefix_caching": true,
+      "chunked_prefill": true
+    }
+  },
+  "workload_contract": {
+    "workload_id": "gsm8k-short-p16-closed-loop-20260905-capacity",
+    "dataset_sha256": "3730d312f6e3440559ace48831e51066acaca737f6eabec99bccb9e4b3c39d14",
+    "arrival_trace_sha256": "5cfd3f0a6e280796a0574c75524965ab81496fd0adedb888a84a11cd8f31d651",
+    "parameters": {
+      "dataset": "GSM8K",
+      "requests": 16,
+      "workers": 16,
+      "arrival_qps": 0.0,
+      "context_tokens": 0,
+      "prefix_mode": "unique",
+      "prompt_length_regime": "short"
+    }
+  },
+  "environment_contract": {
+    "environment_id": "liteserver-159-npu6-ascend910b3-vllm018-20260905",
+    "hardware": {
+      "device_model": "Ascend 910B3",
+      "device_count": 1,
+      "physical_device_id": 6,
+      "topology": "single-node-single-device"
+    },
+    "software": {
+      "inference_scaling_commit": "bd37a2799010724a0d624241635bb42795908ec2",
+      "inference_scaling_source_sha256": "4cd534ae6f5447918ff553fa9e2320457ef163e3c369af83a5dbfcc6f8dad917",
+      "inference_scaling_dirty": true,
+      "vllm_version": "0.18.0+empty",
+      "vllm_ascend_version": "0.18.0",
+      "ascend_driver_version": "25.5.1",
+      "container_image": "quay.io/ascend/vllm-ascend:v0.18.0"
+    },
+    "models": {
+      "base": {
+        "model_id": "Qwen2.5-1.5B-Instruct",
+        "weights_sha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee"
+      },
+      "proposal": {
+        "model_id": "Qwen2.5-0.5B-Instruct",
+        "weights_sha256": "fdf756fa7fcbe7404d5c60e26bff1a0c8b8aa1f72ced49e7dd0210fe288fb7fe"
+      }
+    }
+  },
+  "objective": {
+    "primary_metric": "completed_qps",
+    "direction": "maximize",
+    "constraints": [
+      {"metric": "latency_seconds.p95", "operator": "<=", "value": 180.0},
+      {"metric": "accuracy", "operator": ">=", "value": 0.25}
+    ]
+  },
+  "required_metrics": [
+    "completed_qps",
+    "latency_seconds.p50",
+    "latency_seconds.p95",
+    "latency_seconds.p99",
+    "accuracy",
+    "proposal_kv_peak_fraction"
+  ],
+  "baseline": {
+    "configuration_id": "manual-40-48-fixed-graphs",
+    "description": "Current manual policy with its observed graph buckets frozen",
+    "settings": {
+      "model_runner": "MRV1",
+      "base_max_num_seqs": 40,
+      "proposal_max_num_seqs": 48,
+      "base_max_num_batched_tokens": 10240,
+      "proposal_max_num_batched_tokens": 12288,
+      "base_memory_fraction": 0.54,
+      "proposal_memory_fraction": 0.36,
+      "base_batch_wait_seconds": 0.0,
+      "proposal_batch_wait_seconds": 0.02,
+      "base_score_priority": 1,
+      "base_graph_mode": "FULL_DECODE_ONLY",
+      "base_graph_capture_sizes": [1, 2, 4, 8, 16, 24, 32, 40],
+      "proposal_graph_mode": "FULL_DECODE_ONLY",
+      "proposal_graph_capture_sizes": [1, 2, 4, 8, 16, 24, 32, 40, 48]
+    }
+  },
+  "candidates": [
+    {
+      "configuration_id": "pressure-derived-128-384-fixed-graphs",
+      "description": "Lift scheduler concurrency to measured base/proposal in-flight pressure",
+      "settings": {
+        "model_runner": "MRV1",
+        "base_max_num_seqs": 128,
+        "proposal_max_num_seqs": 384,
+        "base_max_num_batched_tokens": 10240,
+        "proposal_max_num_batched_tokens": 12288,
+        "base_memory_fraction": 0.54,
+        "proposal_memory_fraction": 0.36,
+        "base_batch_wait_seconds": 0.0,
+        "proposal_batch_wait_seconds": 0.02,
+        "base_score_priority": 1,
+        "base_graph_mode": "FULL_DECODE_ONLY",
+        "base_graph_capture_sizes": [1, 2, 4, 8, 16, 24, 32, 40],
+        "proposal_graph_mode": "FULL_DECODE_ONLY",
+        "proposal_graph_capture_sizes": [1, 2, 4, 8, 16, 24, 32, 40, 48]
+      }
+    }
+  ]
+}

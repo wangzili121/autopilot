@@ -1,0 +1,130 @@
+{
+  "baseline": {
+    "configuration_id": "historical-saturation-128-768",
+    "description": "Validated short-p96 acquisition anchor",
+    "settings": {
+      "base_batch_wait_seconds": 0.01,
+      "base_max_num_batched_tokens": 32768,
+      "base_max_num_seqs": 128,
+      "base_memory_fraction": 0.54,
+      "base_score_priority": 1,
+      "model_runner": "MRV1",
+      "proposal_batch_wait_seconds": 0.01,
+      "proposal_max_num_batched_tokens": 131072,
+      "proposal_max_num_seqs": 768,
+      "proposal_memory_fraction": 0.36
+    }
+  },
+  "campaign_id": "cis-small-proposal-short-p96-basebt49152-npu7-20260906-r1",
+  "candidates": [
+    {
+      "configuration_id": "conditional-is-short-p96-token-factorization-v1--2bab023aaa584f43",
+      "description": "Mechanism-guided probe from conditional-is-short-p96-token-factorization-round1; score=0.471017",
+      "settings": {
+        "base_batch_wait_seconds": 0.01,
+        "base_max_num_batched_tokens": 49152,
+        "base_max_num_seqs": 128,
+        "base_memory_fraction": 0.54,
+        "base_score_priority": 1,
+        "model_runner": "MRV1",
+        "proposal_batch_wait_seconds": 0.01,
+        "proposal_max_num_batched_tokens": 131072,
+        "proposal_max_num_seqs": 768,
+        "proposal_memory_fraction": 0.36
+      }
+    }
+  ],
+  "environment_contract": {
+    "environment_id": "liteserver-189-npu7-ascend910b3-vllm018-20260906",
+    "hardware": {
+      "device_count": 1,
+      "device_model": "Ascend 910B3",
+      "physical_device_id": 7,
+      "topology": "single-node-single-device"
+    },
+    "models": {
+      "base": {
+        "model_id": "Qwen2.5-1.5B-Instruct",
+        "weights_sha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee"
+      },
+      "proposal": {
+        "model_id": "Qwen2.5-0.5B-Instruct",
+        "weights_sha256": "fdf756fa7fcbe7404d5c60e26bff1a0c8b8aa1f72ced49e7dd0210fe288fb7fe"
+      }
+    },
+    "software": {
+      "ascend_driver_version": "25.5.1",
+      "container_image": "quay.io/ascend/vllm-ascend:v0.18.0",
+      "inference_scaling_commit": "bd37a2799010724a0d624241635bb42795908ec2",
+      "inference_scaling_dirty": true,
+      "inference_scaling_source_sha256": "4cd534ae6f5447918ff553fa9e2320457ef163e3c369af83a5dbfcc6f8dad917",
+      "npu_container_device_mode": "privileged_visible_devices",
+      "vllm_ascend_version": "0.18.0",
+      "vllm_version": "0.18.0+empty"
+    }
+  },
+  "objective": {
+    "constraints": [
+      {
+        "metric": "latency_seconds.p95",
+        "operator": "<=",
+        "value": 300.0
+      },
+      {
+        "metric": "accuracy",
+        "operator": ">=",
+        "value": 0.25
+      }
+    ],
+    "direction": "maximize",
+    "primary_metric": "completed_qps"
+  },
+  "protocol": {
+    "blocks": 1,
+    "pair_seeds": [
+      2026090641,
+      2026090642
+    ],
+    "pattern": "ABBA"
+  },
+  "required_metrics": [
+    "completed_qps",
+    "latency_seconds.p50",
+    "latency_seconds.p95",
+    "latency_seconds.p99",
+    "accuracy",
+    "proposal_kv_peak_fraction"
+  ],
+  "schema_version": "1.0",
+  "semantic_contract": {
+    "algorithm_id": "conditional_is_small_proposal",
+    "graph_sha256": "a46acdc960d12f5dab0af3515d083f1cf6780af34870e1febc01f85e86249cea",
+    "invariants": {
+      "apply_importance_correction": true,
+      "automatic_prefix_caching": true,
+      "block_size": 48,
+      "candidate_count": 8,
+      "chunked_prefill": true,
+      "model_runner": "MRV1",
+      "rollout_count": 3,
+      "sampler": "native_ascend_categorical",
+      "total_length": 192
+    },
+    "semantic_class": "exact"
+  },
+  "strong_baseline": true,
+  "workload_contract": {
+    "arrival_trace_sha256": "44a0be82c08a447c082aa562cb46dfea024e01253c1cd08d196f22f08a045ebd",
+    "dataset_sha256": "3730d312f6e3440559ace48831e51066acaca737f6eabec99bccb9e4b3c39d14",
+    "parameters": {
+      "arrival_qps": 0.0,
+      "context_tokens": 0,
+      "dataset": "GSM8K",
+      "prefix_mode": "unique",
+      "prompt_length_regime": "short",
+      "requests": 96,
+      "workers": 96
+    },
+    "workload_id": "gsm8k-short-p96-closed-loop-20260906-historical-anchors"
+  }
+}

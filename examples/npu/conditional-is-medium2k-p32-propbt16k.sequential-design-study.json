@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "study_id": "cis-small-proposal-medium2k-p32-propbt16k-sequential-design-v1",
+  "methods": [
+    "frozen_spec_method",
+    "finite_horizon_hoeffding",
+    "hedged_capital_predictable_plugin"
+  ],
+  "pair_looks": [4, 6, 8, 10, 12, 14, 16, 18, 20],
+  "true_log_effects": [-0.06, 0.0, 0.014888612493750559, 0.0295588022415444, 0.058268908123975824],
+  "noise_models": [
+    "observed_symmetric_residual",
+    "bounded_endpoints"
+  ],
+  "simulation_trials": 1000,
+  "simulation_seed": 20260906
+}

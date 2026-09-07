@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:runtime-policy-pool-spec:1.0",
+  "title": "Inference Autopilot Runtime Policy Pool Spec",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "pool_id",
+    "semantic_contract",
+    "fallback_endpoint",
+    "policy_endpoints",
+    "routing_policy"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "pool_id": {"$ref": "#/$defs/id"},
+    "semantic_contract": {"$ref": "#/$defs/semanticContract"},
+    "fallback_endpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["endpoint_id", "deployment_settings"],
+      "properties": {
+        "endpoint_id": {"$ref": "#/$defs/id"},
+        "deployment_settings": {"$ref": "#/$defs/settingMap"}
+      }
+    },
+    "policy_endpoints": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "endpoint_id",
+          "policy_bundle_sha256",
+          "policy_holdout_assessment_sha256",
+          "priority"
+        ],
+        "properties": {
+          "endpoint_id": {"$ref": "#/$defs/id"},
+          "policy_bundle_sha256": {"$ref": "#/$defs/digest"},
+          "policy_holdout_assessment_sha256": {"$ref": "#/$defs/digest"},
+          "priority": {"type": "integer", "minimum": 0}
+        }
+      }
+    },
+    "routing_policy": {"$ref": "#/$defs/routingPolicy"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "settingValue": {
+      "oneOf": [
+        {"type": ["boolean", "number", "string"]},
+        {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "integer", "minimum": 1}
+        }
+      ]
+    },
+    "settingMap": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"type": "string", "minLength": 1},
+      "additionalProperties": {"$ref": "#/$defs/settingValue"}
+    },
+    "semanticContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "algorithm_id",
+        "semantic_cohort_id",
+        "graph_sha256",
+        "accepted_semantic_classes"
+      ],
+      "properties": {
+        "algorithm_id": {"$ref": "#/$defs/id"},
+        "semantic_cohort_id": {"$ref": "#/$defs/id"},
+        "graph_sha256": {"$ref": "#/$defs/digest"},
+        "accepted_semantic_classes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/id"}
+        }
+      }
+    },
+    "constraint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target", "operator", "value"],
+      "properties": {
+        "target": {"type": "string", "minLength": 1},
+        "operator": {"enum": ["<=", ">="]},
+        "value": {"type": "number"}
+      }
+    },
+    "routingPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "require_safe_boundary",
+        "minimum_live_metric_samples",
+        "maximum_consecutive_failures",
+        "live_constraints",
+        "on_no_match",
+        "on_ambiguous_match",
+        "on_health_violation"
+      ],
+      "properties": {
+        "require_safe_boundary": {"type": "boolean"},
+        "minimum_live_metric_samples": {"type": "integer", "minimum": 0},
+        "maximum_consecutive_failures": {"type": "integer", "minimum": 0},
+        "live_constraints": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/constraint"}
+        },
+        "on_no_match": {"const": "fallback"},
+        "on_ambiguous_match": {"const": "fallback"},
+        "on_health_violation": {"const": "fallback"}
+      }
+    }
+  }
+}

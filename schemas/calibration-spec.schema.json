@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:calibration-spec:1.0",
+  "title": "Inference Autopilot Calibration Spec",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "campaign_id",
+    "strong_baseline",
+    "protocol",
+    "semantic_contract",
+    "workload_contract",
+    "environment_contract",
+    "objective",
+    "required_metrics",
+    "baseline",
+    "candidates"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "campaign_id": {"$ref": "#/$defs/id"},
+    "strong_baseline": {"type": "boolean"},
+    "protocol": {"$ref": "#/$defs/protocol"},
+    "semantic_contract": {"$ref": "#/$defs/semanticContract"},
+    "workload_contract": {"$ref": "#/$defs/workloadContract"},
+    "environment_contract": {"$ref": "#/$defs/environmentContract"},
+    "objective": {"$ref": "#/$defs/objective"},
+    "required_metrics": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "baseline": {"$ref": "#/$defs/configuration"},
+    "candidates": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/configuration"}
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "nonemptyObject": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "protocol": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pattern", "blocks", "pair_seeds"],
+      "properties": {
+        "pattern": {"enum": ["ABBA", "BAAB"]},
+        "blocks": {"type": "integer", "minimum": 1},
+        "pair_seeds": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {"type": "integer", "minimum": 0}
+        }
+      }
+    },
+    "semanticContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm_id", "semantic_class", "graph_sha256", "invariants"],
+      "properties": {
+        "algorithm_id": {"$ref": "#/$defs/id"},
+        "semantic_class": {"enum": ["exact", "approximate", "numerical_variant"]},
+        "graph_sha256": {"$ref": "#/$defs/digest"},
+        "invariants": {"$ref": "#/$defs/nonemptyObject"}
+      }
+    },
+    "workloadContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "workload_id",
+        "dataset_sha256",
+        "arrival_trace_sha256",
+        "parameters"
+      ],
+      "properties": {
+        "workload_id": {"$ref": "#/$defs/id"},
+        "dataset_sha256": {"$ref": "#/$defs/digest"},
+        "arrival_trace_sha256": {"$ref": "#/$defs/digest"},
+        "parameters": {"$ref": "#/$defs/nonemptyObject"}
+      }
+    },
+    "environmentContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["environment_id", "hardware", "software", "models"],
+      "properties": {
+        "environment_id": {"$ref": "#/$defs/id"},
+        "hardware": {"$ref": "#/$defs/nonemptyObject"},
+        "software": {"$ref": "#/$defs/nonemptyObject"},
+        "models": {"$ref": "#/$defs/nonemptyObject"}
+      }
+    },
+    "metricConstraint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["metric", "operator", "value"],
+      "properties": {
+        "metric": {"type": "string", "minLength": 1},
+        "operator": {"enum": ["<=", ">="]},
+        "value": {"type": "number"}
+      }
+    },
+    "objective": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["primary_metric", "direction", "constraints"],
+      "properties": {
+        "primary_metric": {"type": "string", "minLength": 1},
+        "direction": {"enum": ["maximize", "minimize"]},
+        "constraints": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/metricConstraint"}
+        }
+      }
+    },
+    "configuration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["configuration_id", "settings", "description"],
+      "properties": {
+        "configuration_id": {"$ref": "#/$defs/id"},
+        "settings": {"$ref": "#/$defs/nonemptyObject"},
+        "description": {"type": "string"}
+      }
+    }
+  }
+}

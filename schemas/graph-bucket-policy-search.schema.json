@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:graph-bucket-policy-search:1.0",
+  "title": "Inference Autopilot Graph Bucket Policy Search",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "corpus_id",
+    "corpus_sha256",
+    "policy",
+    "constraints",
+    "holdout_constraints",
+    "minimum_train_regimes",
+    "minimum_holdout_regimes",
+    "train_regime_count",
+    "holdout_regime_count",
+    "role_searches",
+    "coverage",
+    "eligible",
+    "rejection_reasons",
+    "graph_bucket_policy_search_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "corpus_id": {"$ref": "#/$defs/id"},
+    "corpus_sha256": {"$ref": "#/$defs/sha256"},
+    "policy": {"type": "object"},
+    "constraints": {"$ref": "#/$defs/constraints"},
+    "holdout_constraints": {"$ref": "#/$defs/constraints"},
+    "minimum_train_regimes": {"type": "integer", "minimum": 1},
+    "minimum_holdout_regimes": {"type": "integer", "minimum": 1},
+    "train_regime_count": {"type": "integer", "minimum": 1},
+    "holdout_regime_count": {"type": "integer", "minimum": 1},
+    "role_searches": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 2,
+      "items": {"$ref": "#/$defs/roleSearch"}
+    },
+    "coverage": {
+      "type": "array",
+      "minItems": 2,
+      "items": {"$ref": "#/$defs/coverageRecord"}
+    },
+    "eligible": {"type": "boolean"},
+    "rejection_reasons": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "insufficient_train_regimes",
+          "insufficient_holdout_regimes",
+          "no_policy_change",
+          "holdout_constraint_violation"
+        ]
+      }
+    },
+    "graph_bucket_policy_search_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "ratio": {"type": "number", "minimum": 0, "maximum": 1},
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "minimum_retained_graph_fraction",
+        "maximum_remapped_graph_fraction",
+        "maximum_added_padding_ratio"
+      ],
+      "properties": {
+        "minimum_retained_graph_fraction": {"$ref": "#/$defs/ratio"},
+        "maximum_remapped_graph_fraction": {"$ref": "#/$defs/ratio"},
+        "maximum_added_padding_ratio": {"$ref": "#/$defs/ratio"}
+      }
+    },
+    "worstCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "minimum_retained_graph_fraction",
+        "maximum_remapped_graph_fraction",
+        "maximum_added_padding_ratio"
+      ],
+      "properties": {
+        "minimum_retained_graph_fraction": {"$ref": "#/$defs/ratio"},
+        "maximum_remapped_graph_fraction": {"$ref": "#/$defs/ratio"},
+        "maximum_added_padding_ratio": {"$ref": "#/$defs/ratio"}
+      }
+    },
+    "frontierPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bucket_count",
+        "capture_sizes",
+        "minimum_retained_graph_fraction",
+        "maximum_remapped_graph_fraction",
+        "maximum_added_padding_ratio"
+      ],
+      "properties": {
+        "bucket_count": {"type": "integer", "minimum": 1},
+        "capture_sizes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "integer", "minimum": 1}
+        },
+        "minimum_retained_graph_fraction": {"$ref": "#/$defs/ratio"},
+        "maximum_remapped_graph_fraction": {"$ref": "#/$defs/ratio"},
+        "maximum_added_padding_ratio": {"$ref": "#/$defs/ratio"}
+      }
+    },
+    "roleSearch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "engine_role",
+        "configured_bucket_count",
+        "search_strategy",
+        "search_space_subset_count",
+        "evaluated_transition_count",
+        "retained_pareto_state_count",
+        "selected_capture_sizes",
+        "selected_train_worst_case",
+        "bucket_count_frontier"
+      ],
+      "properties": {
+        "engine_role": {"enum": ["base", "proposal"]},
+        "configured_bucket_count": {"type": "integer", "minimum": 1},
+        "search_strategy": {
+          "const": "ordered_pareto_dynamic_programming"
+        },
+        "search_space_subset_count": {"type": "integer", "minimum": 1},
+        "evaluated_transition_count": {"type": "integer", "minimum": 1},
+        "retained_pareto_state_count": {"type": "integer", "minimum": 1},
+        "selected_capture_sizes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "integer", "minimum": 1}
+        },
+        "selected_train_worst_case": {"$ref": "#/$defs/worstCase"},
+        "bucket_count_frontier": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/frontierPoint"}
+        }
+      }
+    },
+    "coverageRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "regime_id",
+        "split",
+        "profile_id",
+        "passes_constraints",
+        "coverage"
+      ],
+      "properties": {
+        "regime_id": {"$ref": "#/$defs/id"},
+        "split": {"enum": ["train", "holdout"]},
+        "profile_id": {"$ref": "#/$defs/id"},
+        "passes_constraints": {"type": "boolean"},
+        "coverage": {"type": "object"}
+      }
+    }
+  }
+}

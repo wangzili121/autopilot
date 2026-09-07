@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:vllm-graph-metrics:1.0",
+  "title": "Inference Autopilot vLLM Graph Metrics",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "profile_id",
+    "source_log_sha256",
+    "engines",
+    "vllm_graph_metrics_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "profile_id": {"$ref": "#/$defs/id"},
+    "source_log_sha256": {"$ref": "#/$defs/sha256"},
+    "engines": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/engine"}
+    },
+    "vllm_graph_metrics_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "engine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["engine_role", "graph_mode", "configured_capture_sizes", "stats"],
+      "properties": {
+        "engine_role": {"enum": ["base", "proposal"]},
+        "graph_mode": {"type": "string", "minLength": 1},
+        "configured_capture_sizes": {
+          "type": "array",
+          "items": {"type": "integer", "minimum": 1}
+        },
+        "stats": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/stat"}
+        }
+      }
+    },
+    "stat": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "num_unpadded_tokens",
+        "num_padded_tokens",
+        "num_paddings",
+        "runtime_mode",
+        "count"
+      ],
+      "properties": {
+        "num_unpadded_tokens": {"type": "integer", "minimum": 1},
+        "num_padded_tokens": {"type": "integer", "minimum": 1},
+        "num_paddings": {"type": "integer", "minimum": 0},
+        "runtime_mode": {"type": "string", "minLength": 1},
+        "execution_phase": {
+          "enum": ["unknown", "prefill", "decode", "mixed"]
+        },
+        "count": {"type": "integer", "minimum": 1}
+      }
+    }
+  }
+}

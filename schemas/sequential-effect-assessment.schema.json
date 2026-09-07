@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:sequential-effect-assessment:1.0",
+  "title": "Inference Autopilot Sequential Effect Assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "producer",
+    "effect_id",
+    "status",
+    "requirements",
+    "source",
+    "observations",
+    "summary",
+    "decision",
+    "source_issues",
+    "audit",
+    "sequential_effect_assessment_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "producer": {"type": "string", "minLength": 1},
+    "effect_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "status": {
+      "enum": [
+        "promote",
+        "close_direction",
+        "replicate",
+        "budget_exhausted",
+        "seed_pool_exhausted",
+        "quality_rejected",
+        "invalid_evidence",
+        "diagnostic_only"
+      ]
+    },
+    "requirements": {"$ref": "sequential-effect-spec.schema.json"},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["effect_spec_sha256", "calibration_assessments"],
+      "properties": {
+        "effect_spec_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "calibration_assessments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["assessment_sha256", "plan_sha256"],
+            "properties": {
+              "assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+              "plan_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+            }
+          }
+        }
+      }
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source_assessment_sha256",
+          "plan_sha256",
+          "workload_seed",
+          "replay_comparison_group_id",
+          "candidate_comparison_group_id",
+          "replay_baseline_value",
+          "replay_second_value",
+          "candidate_baseline_value",
+          "candidate_value",
+          "candidate_directional_log_effect",
+          "replay_directional_log_drift",
+          "adjusted_log_effect"
+        ],
+        "properties": {
+          "source_assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "plan_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "workload_seed": {"type": "integer", "minimum": 0},
+          "replay_comparison_group_id": {"type": "string", "minLength": 1},
+          "candidate_comparison_group_id": {"type": "string", "minLength": 1},
+          "replay_baseline_value": {"type": "number", "exclusiveMinimum": 0},
+          "replay_second_value": {"type": "number", "exclusiveMinimum": 0},
+          "candidate_baseline_value": {"type": "number", "exclusiveMinimum": 0},
+          "candidate_value": {"type": "number", "exclusiveMinimum": 0},
+          "candidate_directional_log_effect": {"type": "number"},
+          "replay_directional_log_drift": {"type": "number"},
+          "adjusted_log_effect": {"type": "number"}
+        }
+      }
+    },
+    "summary": {"type": "object"},
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action", "next_pair_seeds", "reasons"],
+      "properties": {
+        "action": {"type": "string", "minLength": 1},
+        "next_pair_seeds": {"type": "array", "uniqueItems": true, "items": {"type": "integer", "minimum": 0}},
+        "reasons": {"type": "array", "uniqueItems": true, "items": {"type": "string"}}
+      }
+    },
+    "source_issues": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "audit": {"type": "object"},
+    "sequential_effect_assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

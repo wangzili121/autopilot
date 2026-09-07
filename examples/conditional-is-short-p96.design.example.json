@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "design_id": "conditional-is-short-p96-initial-v1",
+  "compiled_space_sha256": "89912276ff57663961b80d72e25e454d7ff564334eda598a81a9ae89c67080d3",
+  "candidate_budget": 8,
+  "seed": 2026090401,
+  "selection_context": {
+    "algorithm_id": "conditional_is_small_proposal",
+    "semantic_cohort_id": "conditional_is_small_proposal",
+    "graph_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+    "accepted_evidence_semantic_classes": [
+      "exact",
+      "exact_algorithm",
+      "legacy_unverified_exact_candidate"
+    ],
+    "workload_id": "gsm8k-short-p96-closed-loop",
+    "environment_id": "replace-with-frozen-ascend-environment",
+    "static_features": {
+      "workload.arrival_qps": 0.0,
+      "workload.prompt_length_regime": "short",
+      "workload.requests": 96,
+      "workload.workers": 96
+    },
+    "static_feature_ranges": {
+      "workload.context_tokens": {"minimum": 0, "maximum": 512},
+      "workload.context_tokens_requested": {"minimum": 0, "maximum": 512},
+      "workload.prompt_tokens.mean": {"minimum": 0, "maximum": 512},
+      "workload.prompt_tokens_approx": {"minimum": 0, "maximum": 512},
+      "workload.prompt_tokens_mean": {"minimum": 0, "maximum": 512}
+    }
+  },
+  "baseline_settings": {
+    "model_runner": "MRV1",
+    "base_max_num_seqs": 256,
+    "proposal_max_num_seqs": 896,
+    "base_max_num_batched_tokens": 65536,
+    "proposal_max_num_batched_tokens": 147456,
+    "base_memory_fraction": 0.54,
+    "proposal_memory_fraction": 0.36,
+    "base_batch_wait_seconds": 0.01,
+    "proposal_batch_wait_seconds": 0.01,
+    "base_score_priority": 1
+  },
+  "evidence_policy": {
+    "grades": ["A_formal_paired", "B_controlled_single"],
+    "minimum_matched_deployment_settings": 2,
+    "maximum_anchor_candidates": 3
+  },
+  "maximum_boundary_candidates": 3
+}

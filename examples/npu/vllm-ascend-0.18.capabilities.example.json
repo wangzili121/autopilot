@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "profile_id": "vllm-ascend-0.18-npu4-20260905",
+  "environment_id": "ascend-910b-vllm-ascend-0.18",
+  "capabilities": {
+    "vllm_ascend.model_runner.mrv1": {
+      "status": "supported",
+      "reason": "MRV1 completed the matched no-graph Conditional IS smoke run",
+      "evidence_sha256": [
+        "9ebfe6776da45a5233a975aecd4c45f8ada94b8ccffb9ed89ef8b923d03befd4"
+      ]
+    },
+    "vllm_ascend.model_runner.mrv2": {
+      "status": "unsupported",
+      "reason": "The stock image fails initialization; a local compatibility patch still fails with ACL Graph and is not a deployable native capability",
+      "evidence_sha256": [
+        "928fd60c2a67ae2b3d383b408fffadb292b8537eab2f3240c89f8505644f8f7d",
+        "34803b31cb4acf563ebd6705c053db6dc39c3091c9ba67270bafef7ef30dcba7"
+      ]
+    },
+    "vllm_ascend.model_runner.mrv2_patched_no_graph": {
+      "status": "supported",
+      "reason": "A diagnostic-only request-state patch completed with graph disabled but was materially slower than MRV1",
+      "evidence_sha256": [
+        "12deee253567a6f1739ede0742a19fb4f0b894f7ffd861775324550d0249c2db",
+        "31d90a63418c8dbc53ce5263a033be8fdebe94b41efd1e936f55f4667bd717b1"
+      ]
+    }
+  }
+}

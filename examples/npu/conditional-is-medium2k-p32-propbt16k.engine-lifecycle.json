@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "lifecycle_id": "cis-small-proposal-medium2k-p32-propbt16k-role-sticky-v1",
+  "maximum_resident_memory_fraction": 0.95,
+  "preserve_run_order": true,
+  "required_epoch_resets": [
+    "assert_no_running_requests",
+    "rebuild_continuous_batchers",
+    "rebuild_score_caches",
+    "reseed_workload",
+    "reset_backend_metric_snapshots",
+    "reset_prefix_cache",
+    "reset_request_ids",
+    "synchronize_device"
+  ],
+  "validation_pair_seeds": [2026090611, 2026090612]
+}

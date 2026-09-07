@@ -1,0 +1,68 @@
+{
+  "schema_version": "1.0",
+  "profile_id": "conditional-is-base-short-p96-acl-v1",
+  "algorithm_id": "conditional_is_small_proposal",
+  "engine_role": "base_model",
+  "backend": "acl",
+  "graph_mode": "piecewise",
+  "observations": [
+    {"stage_id": "candidate_generate", "shape_size": 1, "count": 240, "eager_latency_ms": 1.40},
+    {"stage_id": "candidate_generate", "shape_size": 4, "count": 180, "eager_latency_ms": 1.85},
+    {"stage_id": "candidate_generate", "shape_size": 8, "count": 90, "eager_latency_ms": 2.40},
+    {"stage_id": "candidate_generate", "shape_size": 16, "count": 40, "eager_latency_ms": 3.55},
+    {"stage_id": "target_score", "shape_size": 8, "count": 40, "eager_latency_ms": 3.10},
+    {"stage_id": "target_score", "shape_size": 16, "count": 80, "eager_latency_ms": 4.80},
+    {"stage_id": "target_score", "shape_size": 32, "count": 120, "eager_latency_ms": 7.90},
+    {"stage_id": "target_score", "shape_size": 64, "count": 30, "eager_latency_ms": 13.80}
+  ],
+  "candidates": [
+    {
+      "capture_size": 1,
+      "memory_bytes": 33554432,
+      "capture_time_ms": 90.0,
+      "replay_latency_ms_by_stage": {"candidate_generate": 0.90, "target_score": 1.80}
+    },
+    {
+      "capture_size": 4,
+      "memory_bytes": 41943040,
+      "capture_time_ms": 105.0,
+      "replay_latency_ms_by_stage": {"candidate_generate": 1.05, "target_score": 1.95}
+    },
+    {
+      "capture_size": 8,
+      "memory_bytes": 50331648,
+      "capture_time_ms": 125.0,
+      "replay_latency_ms_by_stage": {"candidate_generate": 1.30, "target_score": 2.20}
+    },
+    {
+      "capture_size": 16,
+      "memory_bytes": 67108864,
+      "capture_time_ms": 160.0,
+      "replay_latency_ms_by_stage": {"candidate_generate": 1.90, "target_score": 2.85}
+    },
+    {
+      "capture_size": 32,
+      "memory_bytes": 100663296,
+      "capture_time_ms": 220.0,
+      "replay_latency_ms_by_stage": {"candidate_generate": 3.00, "target_score": 4.35}
+    },
+    {
+      "capture_size": 64,
+      "memory_bytes": 150994944,
+      "capture_time_ms": 340.0,
+      "replay_latency_ms_by_stage": {"candidate_generate": 5.40, "target_score": 7.20}
+    }
+  ],
+  "budget": {
+    "max_buckets": 4,
+    "memory_budget_bytes": 268435456,
+    "capture_time_budget_ms": 700.0,
+    "max_padding_ratio": 1.0,
+    "minimum_graph_hit_rate": 0.85
+  },
+  "objective": {
+    "amortization_windows": 100,
+    "padding_penalty_ms_per_unit": 0.002,
+    "memory_penalty_ms_per_gib": 1.0
+  }
+}

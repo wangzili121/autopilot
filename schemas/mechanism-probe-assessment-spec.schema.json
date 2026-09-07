@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:mechanism-probe-assessment-spec:1.0",
+  "title": "Inference Autopilot Mechanism Probe Assessment Spec",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "assessment_id",
+    "mechanism_probe_plan_sha256",
+    "calibration_plan_sha256",
+    "candidate_configuration_id",
+    "minimum_complete_pairs",
+    "minimum_median_improvement_fraction",
+    "require_effect_outside_replay_noise",
+    "require_quality_constraints"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "assessment_id": {"$ref": "#/$defs/id"},
+    "mechanism_probe_plan_sha256": {"$ref": "#/$defs/sha256"},
+    "calibration_plan_sha256": {"$ref": "#/$defs/sha256"},
+    "candidate_configuration_id": {"$ref": "#/$defs/id"},
+    "minimum_complete_pairs": {"type": "integer", "minimum": 1},
+    "minimum_median_improvement_fraction": {"type": "number"},
+    "require_effect_outside_replay_noise": {"type": "boolean"},
+    "require_quality_constraints": {"type": "boolean"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

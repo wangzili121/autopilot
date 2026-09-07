@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://inference-autopilot.local/schemas/sequential-design-study.schema.json",
+  "title": "Sequential Design Study",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "producer",
+    "study_id",
+    "status",
+    "requirements",
+    "source",
+    "observed_method_comparison",
+    "simulation_results",
+    "audit",
+    "sequential_design_study_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "producer": {"type": "string"},
+    "study_id": {"type": "string"},
+    "status": {"const": "diagnostic_only"},
+    "requirements": {"type": "object"},
+    "source": {"type": "object"},
+    "observed_method_comparison": {"type": "array"},
+    "simulation_results": {"type": "array"},
+    "audit": {"type": "object"},
+    "sequential_design_study_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

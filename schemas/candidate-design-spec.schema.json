@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:candidate-design-spec:1.0",
+  "title": "Inference Autopilot Candidate Design Spec",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "design_id",
+    "compiled_space_sha256",
+    "candidate_budget",
+    "seed",
+    "selection_context",
+    "baseline_settings",
+    "evidence_policy",
+    "maximum_boundary_candidates"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "design_id": {"$ref": "#/$defs/id"},
+    "compiled_space_sha256": {"$ref": "#/$defs/digest"},
+    "candidate_budget": {"type": "integer", "minimum": 1},
+    "seed": {"type": "integer", "minimum": 0},
+    "selection_context": {"$ref": "#/$defs/context"},
+    "baseline_settings": {
+      "allOf": [
+        {"$ref": "#/$defs/settingMap"},
+        {"minProperties": 1}
+      ]
+    },
+    "evidence_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "grades",
+        "minimum_matched_deployment_settings",
+        "maximum_anchor_candidates"
+      ],
+      "properties": {
+        "grades": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"enum": ["A_formal_paired", "B_controlled_single"]}
+        },
+        "minimum_matched_deployment_settings": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maximum_anchor_candidates": {"type": "integer", "minimum": 0}
+      }
+    },
+    "maximum_boundary_candidates": {"type": "integer", "minimum": 0}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "scalar": {"type": ["boolean", "number", "string"]},
+    "settingValue": {
+      "oneOf": [
+        {"type": ["boolean", "number", "string"]},
+        {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "integer", "minimum": 1}
+        }
+      ]
+    },
+    "scalarMap": {
+      "type": "object",
+      "propertyNames": {"type": "string", "minLength": 1},
+      "additionalProperties": {"$ref": "#/$defs/scalar"}
+    },
+    "settingMap": {
+      "type": "object",
+      "propertyNames": {"type": "string", "minLength": 1},
+      "additionalProperties": {"$ref": "#/$defs/settingValue"}
+    },
+    "range": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minimum", "maximum"],
+      "properties": {
+        "minimum": {"type": "number"},
+        "maximum": {"type": "number"}
+      }
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "algorithm_id",
+        "semantic_cohort_id",
+        "graph_sha256",
+        "accepted_evidence_semantic_classes",
+        "workload_id",
+        "environment_id",
+        "static_features",
+        "static_feature_ranges"
+      ],
+      "properties": {
+        "algorithm_id": {"$ref": "#/$defs/id"},
+        "semantic_cohort_id": {"$ref": "#/$defs/id"},
+        "graph_sha256": {"$ref": "#/$defs/digest"},
+        "accepted_evidence_semantic_classes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "workload_id": {"$ref": "#/$defs/id"},
+        "environment_id": {"$ref": "#/$defs/id"},
+        "static_features": {"$ref": "#/$defs/scalarMap"},
+        "static_feature_ranges": {
+          "type": "object",
+          "additionalProperties": {"$ref": "#/$defs/range"}
+        }
+      }
+    }
+  }
+}

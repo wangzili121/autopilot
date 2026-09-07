@@ -1,0 +1,71 @@
+{
+  "schema_version": "1.0",
+  "calibration_id": "conditional-is-ascend-stage-example",
+  "environment_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "model_set_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "configuration_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "relative_error_floor": 0.03,
+  "interval_multiplier": 2.0,
+  "stages": [
+    {
+      "stage_id": "candidate_generate",
+      "primitive": "generate",
+      "resource_role": "base_model",
+      "shape_axis": "active_context_tokens",
+      "buckets": [
+        {
+          "bucket_id": "short-b8",
+          "batch_size": 8,
+          "minimum_shape_tokens": 1,
+          "maximum_shape_tokens": 512,
+          "measurements": [
+            {
+              "shape_tokens": 128,
+              "token_extent": 16,
+              "elapsed_seconds": 1.8,
+              "repetitions": 4,
+              "stddev_seconds": 0.01
+            },
+            {
+              "shape_tokens": 128,
+              "token_extent": 32,
+              "elapsed_seconds": 2.6,
+              "repetitions": 4,
+              "stddev_seconds": 0.01
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stage_id": "target_score",
+      "primitive": "score",
+      "resource_role": "base_model",
+      "shape_axis": "scored_sequence_tokens",
+      "buckets": [
+        {
+          "bucket_id": "medium-b4",
+          "batch_size": 4,
+          "minimum_shape_tokens": 513,
+          "maximum_shape_tokens": 4096,
+          "measurements": [
+            {
+              "shape_tokens": 1024,
+              "token_extent": 128,
+              "elapsed_seconds": 1.14,
+              "repetitions": 4,
+              "stddev_seconds": 0.02
+            },
+            {
+              "shape_tokens": 2048,
+              "token_extent": 256,
+              "elapsed_seconds": 1.78,
+              "repetitions": 4,
+              "stddev_seconds": 0.02
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

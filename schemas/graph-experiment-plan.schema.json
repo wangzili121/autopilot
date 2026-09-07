@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:graph-experiment-plan:1.0",
+  "title": "Inference Autopilot Graph Experiment Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "campaign_id",
+    "source_profile_sha256",
+    "pattern",
+    "blocks",
+    "pair_seeds",
+    "policies",
+    "runs",
+    "graph_experiment_plan_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "campaign_id": {"$ref": "#/$defs/id"},
+    "source_profile_sha256": {"$ref": "#/$defs/sha256"},
+    "pattern": {"const": "ABBA"},
+    "blocks": {"type": "integer", "minimum": 1},
+    "pair_seeds": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {"type": "integer", "minimum": 0}
+    },
+    "policies": {
+      "type": "array",
+      "minItems": 2,
+      "items": {"$ref": "#/$defs/policy"}
+    },
+    "runs": {
+      "type": "array",
+      "minItems": 4,
+      "items": {"$ref": "#/$defs/run"}
+    },
+    "graph_experiment_plan_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "enginePolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["engine_role", "graph_mode", "capture_sizes"],
+      "properties": {
+        "engine_role": {"enum": ["base", "proposal"]},
+        "graph_mode": {"type": "string", "minLength": 1},
+        "capture_sizes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "integer", "minimum": 1}
+        }
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy_id", "derivation", "engines"],
+      "properties": {
+        "policy_id": {"$ref": "#/$defs/id"},
+        "derivation": {
+          "enum": [
+            "configured",
+            "trace_preserving",
+            "coverage_constrained",
+            "no_graph"
+          ]
+        },
+        "engines": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {"$ref": "#/$defs/enginePolicy"}
+        }
+      }
+    },
+    "run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "comparison_id",
+        "sequence_index",
+        "group_sequence_index",
+        "block_index",
+        "pair_index",
+        "variant_role",
+        "policy_id",
+        "workload_seed"
+      ],
+      "properties": {
+        "run_id": {"$ref": "#/$defs/id"},
+        "comparison_id": {"$ref": "#/$defs/id"},
+        "sequence_index": {"type": "integer", "minimum": 0},
+        "group_sequence_index": {"type": "integer", "minimum": 0},
+        "block_index": {"type": "integer", "minimum": 0},
+        "pair_index": {"type": "integer", "minimum": 0},
+        "variant_role": {"enum": ["baseline", "candidate"]},
+        "policy_id": {"$ref": "#/$defs/id"},
+        "workload_seed": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

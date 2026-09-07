@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:graph-policy-coverage:1.0",
+  "title": "Inference Autopilot Graph Policy Coverage",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "profile_id",
+    "profile_sha256",
+    "policy_id",
+    "policy_sha256",
+    "mapping_exact",
+    "engines",
+    "graph_policy_coverage_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "profile_id": {"$ref": "#/$defs/id"},
+    "profile_sha256": {"$ref": "#/$defs/sha256"},
+    "policy_id": {"$ref": "#/$defs/id"},
+    "policy_sha256": {"$ref": "#/$defs/sha256"},
+    "mapping_exact": {"type": "boolean"},
+    "engines": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/engine"}
+    },
+    "graph_policy_coverage_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "shape": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["num_unpadded_tokens", "source_padded_tokens", "count"],
+      "properties": {
+        "num_unpadded_tokens": {"type": "integer", "minimum": 1},
+        "source_padded_tokens": {"type": "integer", "minimum": 1},
+        "candidate_padded_tokens": {"type": "integer", "minimum": 1},
+        "count": {"type": "integer", "minimum": 1}
+      }
+    },
+    "engine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "engine_role",
+        "total_event_count",
+        "source_graph_event_count",
+        "candidate_graph_event_count",
+        "source_graph_token_units",
+        "retained_source_graph_fraction",
+        "remapped_graph_event_count",
+        "dropped_graph_event_count",
+        "source_padding_units",
+        "candidate_padding_units",
+        "additional_padding_units",
+        "additional_padding_ratio",
+        "remapped_shapes",
+        "dropped_shapes"
+      ],
+      "properties": {
+        "engine_role": {"enum": ["base", "proposal"]},
+        "total_event_count": {"type": "integer", "minimum": 1},
+        "source_graph_event_count": {"type": "integer", "minimum": 0},
+        "candidate_graph_event_count": {"type": "integer", "minimum": 0},
+        "source_graph_token_units": {"type": "integer", "minimum": 0},
+        "retained_source_graph_fraction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "remapped_graph_event_count": {"type": "integer", "minimum": 0},
+        "dropped_graph_event_count": {"type": "integer", "minimum": 0},
+        "source_padding_units": {"type": "integer", "minimum": 0},
+        "candidate_padding_units": {"type": "integer", "minimum": 0},
+        "additional_padding_units": {"type": "integer"},
+        "additional_padding_ratio": {"type": "number", "minimum": 0},
+        "remapped_shapes": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              {"$ref": "#/$defs/shape"},
+              {"required": ["candidate_padded_tokens"]}
+            ]
+          }
+        },
+        "dropped_shapes": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/shape"}
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,214 @@
+{
+  "baseline": {
+    "configuration_id": "cis-small-proposal-medium2k-p32-policy-transfer-npu2-20260905-r1-fallback",
+    "description": "Strong fallback from policy conditional-is-short-p32-transfer-offline-v1",
+    "settings": {
+      "base_batch_wait_seconds": 0.0,
+      "base_graph_capture_sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        24,
+        32,
+        40
+      ],
+      "base_graph_mode": "FULL_DECODE_ONLY",
+      "base_max_num_batched_tokens": 10240,
+      "base_max_num_seqs": 40,
+      "base_memory_fraction": 0.54,
+      "base_score_priority": 1,
+      "model_runner": "MRV1",
+      "proposal_batch_wait_seconds": 0.02,
+      "proposal_graph_capture_sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        24,
+        32,
+        40,
+        48
+      ],
+      "proposal_graph_mode": "FULL_DECODE_ONLY",
+      "proposal_max_num_batched_tokens": 12288,
+      "proposal_max_num_seqs": 48,
+      "proposal_memory_fraction": 0.36
+    }
+  },
+  "campaign_id": "cis-small-proposal-medium2k-p32-propbt16k-sequential-npu2-20260906-r1",
+  "candidates": [
+    {
+      "configuration_id": "conditional-is-medium2k-p32-active-round-1-replay-control",
+      "description": "Manifest-identical replay control for sequential drift adjustment",
+      "settings": {
+        "base_batch_wait_seconds": 0.0,
+        "base_graph_capture_sizes": [
+          1,
+          2,
+          4,
+          8,
+          16,
+          24,
+          32,
+          40
+        ],
+        "base_graph_mode": "FULL_DECODE_ONLY",
+        "base_max_num_batched_tokens": 10240,
+        "base_max_num_seqs": 40,
+        "base_memory_fraction": 0.54,
+        "base_score_priority": 1,
+        "model_runner": "MRV1",
+        "proposal_batch_wait_seconds": 0.02,
+        "proposal_graph_capture_sizes": [
+          1,
+          2,
+          4,
+          8,
+          16,
+          24,
+          32,
+          40,
+          48
+        ],
+        "proposal_graph_mode": "FULL_DECODE_ONLY",
+        "proposal_max_num_batched_tokens": 12288,
+        "proposal_max_num_seqs": 48,
+        "proposal_memory_fraction": 0.36
+      }
+    },
+    {
+      "configuration_id": "conditional-is-medium2k-p32-mechanism-v1--9cd2964050c6eb47",
+      "description": "Active-learning selection from conditional-is-medium2k-p32-active-round-1; score=2.39362",
+      "settings": {
+        "base_batch_wait_seconds": 0.0,
+        "base_graph_capture_sizes": [
+          1,
+          2,
+          4,
+          8,
+          16,
+          24,
+          32,
+          40
+        ],
+        "base_graph_mode": "FULL_DECODE_ONLY",
+        "base_max_num_batched_tokens": 10240,
+        "base_max_num_seqs": 40,
+        "base_memory_fraction": 0.54,
+        "base_score_priority": 1,
+        "model_runner": "MRV1",
+        "proposal_batch_wait_seconds": 0.02,
+        "proposal_graph_capture_sizes": [
+          1,
+          2,
+          4,
+          8,
+          16,
+          24,
+          32,
+          40,
+          48
+        ],
+        "proposal_graph_mode": "FULL_DECODE_ONLY",
+        "proposal_max_num_batched_tokens": 16384,
+        "proposal_max_num_seqs": 48,
+        "proposal_memory_fraction": 0.36
+      }
+    }
+  ],
+  "environment_contract": {
+    "environment_id": "liteserver-159-npu2-ascend910b3-vllm018-20260905",
+    "hardware": {
+      "device_count": 1,
+      "device_model": "Ascend 910B3",
+      "physical_device_id": 2,
+      "topology": "single-node-single-device"
+    },
+    "models": {
+      "base": {
+        "model_id": "Qwen2.5-1.5B-Instruct",
+        "weights_sha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee"
+      },
+      "proposal": {
+        "model_id": "Qwen2.5-0.5B-Instruct",
+        "weights_sha256": "fdf756fa7fcbe7404d5c60e26bff1a0c8b8aa1f72ced49e7dd0210fe288fb7fe"
+      }
+    },
+    "software": {
+      "ascend_driver_version": "25.5.1",
+      "container_image": "quay.io/ascend/vllm-ascend:v0.18.0",
+      "inference_scaling_commit": "bd37a2799010724a0d624241635bb42795908ec2",
+      "inference_scaling_dirty": true,
+      "inference_scaling_source_sha256": "4cd534ae6f5447918ff553fa9e2320457ef163e3c369af83a5dbfcc6f8dad917",
+      "vllm_ascend_version": "0.18.0",
+      "vllm_version": "0.18.0+empty"
+    }
+  },
+  "objective": {
+    "constraints": [
+      {
+        "metric": "latency_seconds.p95",
+        "operator": "<=",
+        "value": 180.0
+      },
+      {
+        "metric": "accuracy",
+        "operator": ">=",
+        "value": 0.25
+      }
+    ],
+    "direction": "maximize",
+    "primary_metric": "completed_qps"
+  },
+  "protocol": {
+    "blocks": 1,
+    "pair_seeds": [
+      2026090607,
+      2026090608
+    ],
+    "pattern": "ABBA"
+  },
+  "required_metrics": [
+    "completed_qps",
+    "latency_seconds.p50",
+    "latency_seconds.p95",
+    "latency_seconds.p99",
+    "accuracy",
+    "proposal_kv_peak_fraction"
+  ],
+  "schema_version": "1.0",
+  "semantic_contract": {
+    "algorithm_id": "conditional_is_small_proposal",
+    "graph_sha256": "a46acdc960d12f5dab0af3515d083f1cf6780af34870e1febc01f85e86249cea",
+    "invariants": {
+      "apply_importance_correction": true,
+      "automatic_prefix_caching": true,
+      "block_size": 48,
+      "candidate_count": 8,
+      "chunked_prefill": true,
+      "model_runner": "MRV1",
+      "rollout_count": 3,
+      "sampler": "native_ascend_categorical",
+      "total_length": 192
+    },
+    "semantic_class": "exact"
+  },
+  "strong_baseline": true,
+  "workload_contract": {
+    "arrival_trace_sha256": "f42d6213f3053de61647f1a159207d44b5369b6ec71cf730907cdbd4da094a38",
+    "dataset_sha256": "3730d312f6e3440559ace48831e51066acaca737f6eabec99bccb9e4b3c39d14",
+    "parameters": {
+      "arrival_qps": 0.0,
+      "context_tokens": 2048,
+      "dataset": "GSM8K",
+      "prefix_mode": "unique",
+      "prompt_length_regime": "medium2k",
+      "requests": 32,
+      "workers": 32
+    },
+    "workload_id": "gsm8k-medium2k-p32-closed-loop-20260905-transfer"
+  }
+}

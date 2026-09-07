@@ -1,0 +1,82 @@
+{
+  "schema_version": "1.0",
+  "policy_id": "conditional-is-short-p16-capacity-graph-offline-v1",
+  "compiled_space_sha256": "dcf696b096d781ccb516bb348b0cef50d39753f9fd1c17af37c57fdbe5a63857",
+  "selection_context": {
+    "algorithm_id": "conditional_is_small_proposal",
+    "semantic_cohort_id": "conditional_is_small_proposal",
+    "graph_sha256": "a46acdc960d12f5dab0af3515d083f1cf6780af34870e1febc01f85e86249cea",
+    "accepted_evidence_semantic_classes": ["exact"],
+    "workload_id": "gsm8k-short-p16-closed-loop-20260905-capacity",
+    "environment_id": "liteserver-159-npu6-ascend910b3-vllm018-20260905",
+    "static_features": {
+      "deployment.base_graph_capture_ceiling": 40,
+      "deployment.base_graph_mode": "FULL_DECODE_ONLY",
+      "deployment.proposal_graph_mode": "FULL_DECODE_ONLY",
+      "workload.arrival_qps": 0.0,
+      "workload.workers": 16
+    },
+    "static_feature_ranges": {
+      "workload.prompt_tokens.mean": {"minimum": 64, "maximum": 256},
+      "workload.requests": {"minimum": 16, "maximum": 128}
+    }
+  },
+  "query_static_features": {
+    "algorithm.apply_importance_correction": true,
+    "algorithm.block_size": 48,
+    "algorithm.candidate_count": 8,
+    "algorithm.rollout_count": 3,
+    "algorithm.total_length": 192,
+    "workload.prompt_tokens.mean": 119.5,
+    "workload.requests": 16
+  },
+  "baseline_settings": {
+    "model_runner": "MRV1",
+    "base_max_num_seqs": 40,
+    "proposal_max_num_seqs": 48,
+    "base_max_num_batched_tokens": 10240,
+    "proposal_max_num_batched_tokens": 12288,
+    "base_memory_fraction": 0.54,
+    "proposal_memory_fraction": 0.36,
+    "base_batch_wait_seconds": 0.0,
+    "proposal_batch_wait_seconds": 0.02,
+    "base_score_priority": 1,
+    "base_graph_mode": "FULL_DECODE_ONLY",
+    "base_graph_capture_sizes": [1, 2, 4, 8, 16, 24, 32, 40],
+    "proposal_graph_mode": "FULL_DECODE_ONLY",
+    "proposal_graph_capture_sizes": [1, 2, 4, 8, 16, 24, 32, 40, 48]
+  },
+  "objective": {
+    "target": "performance.completed_qps",
+    "direction": "maximize",
+    "constraints": [
+      {"target": "latency.p95_seconds", "operator": "<=", "value": 75.0},
+      {"target": "quality.accuracy", "operator": ">=", "value": 0.25}
+    ]
+  },
+  "model": {
+    "feature_names": [
+      "algorithm.apply_importance_correction",
+      "algorithm.block_size",
+      "algorithm.candidate_count",
+      "algorithm.rollout_count",
+      "algorithm.total_length",
+      "deployment.base_max_num_seqs",
+      "deployment.proposal_graph_capacity_coverage_ratio",
+      "deployment.proposal_graph_capture_ceiling",
+      "deployment.proposal_graph_uncaptured_capacity",
+      "deployment.proposal_max_num_seqs",
+      "workload.prompt_tokens.mean",
+      "workload.requests"
+    ],
+    "neighbors": 4,
+    "distance_power": 2.0,
+    "maximum_normalized_distance": 0.3,
+    "uncertainty_multiplier": 1.5,
+    "maximum_failure_probability": 0.1,
+    "minimum_response_rows": 8,
+    "minimum_distinct_configurations": 3,
+    "minimum_paired_replicates": 2,
+    "ranked_candidate_limit": 4
+  }
+}

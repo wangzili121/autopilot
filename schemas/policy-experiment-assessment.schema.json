@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:policy-experiment-assessment:1.0",
+  "title": "Inference Autopilot Policy Experiment Assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "producer",
+    "assessment_id",
+    "status",
+    "source",
+    "requirements",
+    "effect",
+    "eligible_for_response_model",
+    "validated_improvement",
+    "next_action",
+    "reasons",
+    "audit",
+    "policy_experiment_assessment_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "producer": {"type": "string", "minLength": 1},
+    "assessment_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "status": {
+      "enum": [
+        "validated_signal",
+        "rejected",
+        "inconclusive",
+        "insufficient_evidence"
+      ]
+    },
+    "source": {"type": "object"},
+    "requirements": {"type": "object"},
+    "effect": {"type": ["object", "null"]},
+    "eligible_for_response_model": {"type": "boolean"},
+    "validated_improvement": {"type": "boolean"},
+    "next_action": {
+      "enum": [
+        "refit_response_model_then_run_independent_holdout",
+        "retain_control_and_refit_response_model",
+        "collect_additional_pairs_before_expanding_search",
+        "do_not_fit_retry_formal_acquisition"
+      ]
+    },
+    "reasons": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "audit": {"type": "object"},
+    "policy_experiment_assessment_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

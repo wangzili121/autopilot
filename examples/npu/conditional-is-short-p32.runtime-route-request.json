@@ -1,0 +1,47 @@
+{
+  "context": {
+    "algorithm_id": "conditional_is_small_proposal",
+    "environment_id": "liteserver-159-npu2-ascend910b3-vllm018-20260905",
+    "graph_sha256": "a46acdc960d12f5dab0af3515d083f1cf6780af34870e1febc01f85e86249cea",
+    "semantic_class": "exact",
+    "semantic_cohort_id": "conditional_is_small_proposal",
+    "static_features": {
+      "workload.arrival_qps": 0.0,
+      "workload.prompt_tokens.mean": 117.34375,
+      "workload.requests": 32,
+      "workload.workers": 32
+    },
+    "workload_id": "gsm8k-short-p32-closed-loop-20260905-transfer"
+  },
+  "decision_id": "conditional-is-short-p32-route-example",
+  "endpoint_states": [
+    {
+      "accepting_requests": true,
+      "configuration_sha256": "013d5ad59ca444dabc4c03eb4cea2ad62cae2f9d69e45a282c7b9dbd1c197986",
+      "consecutive_failures": 0,
+      "endpoint_id": "conditional-is-npu2-fallback-40-48-g48",
+      "live_metric_samples": 32,
+      "live_metrics": {
+        "latency.p95_seconds": 105.0,
+        "runtime.num_preemptions_delta": 0.0
+      },
+      "ready": true
+    },
+    {
+      "accepting_requests": true,
+      "configuration_sha256": "5ea4eabd980003bc0d029830e4b330f37baf101885c4d408c76ceaff89ae4838",
+      "consecutive_failures": 0,
+      "endpoint_id": "conditional-is-short-p32-npu2-40-64-g64",
+      "live_metric_samples": 32,
+      "live_metrics": {
+        "latency.p95_seconds": 105.0,
+        "runtime.num_preemptions_delta": 0.0
+      },
+      "ready": true
+    }
+  ],
+  "routing_request_sha256": "c3021900b9dd657d2f000e32bf7a7fbdcb71b79828ce963ff14d38b943b6d2f0",
+  "runtime_policy_pool_sha256": "f620b19112513a18b67b7fd885db51f5f5b6c8a0749dc906d5ed08e4149d76d8",
+  "safe_boundary": true,
+  "schema_version": "1.0"
+}

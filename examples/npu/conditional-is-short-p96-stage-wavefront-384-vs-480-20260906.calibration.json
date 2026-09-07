@@ -1,0 +1,148 @@
+{
+  "schema_version": "1.0",
+  "campaign_id": "cis-small-proposal-short-p96-wavefront384-vs480-npu2-20260906-r4",
+  "strong_baseline": true,
+  "protocol": {
+    "pattern": "ABBA",
+    "blocks": 1,
+    "pair_seeds": [2026090677, 2026090678]
+  },
+  "semantic_contract": {
+    "algorithm_id": "conditional_is_small_proposal",
+    "semantic_class": "exact",
+    "graph_sha256": "a46acdc960d12f5dab0af3515d083f1cf6780af34870e1febc01f85e86249cea",
+    "invariants": {
+      "candidate_count": 8,
+      "rollout_count": 3,
+      "block_size": 48,
+      "total_length": 192,
+      "apply_importance_correction": true,
+      "sampler": "native_ascend_categorical",
+      "model_runner": "MRV1",
+      "automatic_prefix_caching": true,
+      "chunked_prefill": true
+    }
+  },
+  "workload_contract": {
+    "workload_id": "gsm8k-short-p96-closed-loop-wavefront-width-20260906",
+    "dataset_sha256": "3730d312f6e3440559ace48831e51066acaca737f6eabec99bccb9e4b3c39d14",
+    "arrival_trace_sha256": "44a0be82c08a447c082aa562cb46dfea024e01253c1cd08d196f22f08a045ebd",
+    "parameters": {
+      "dataset": "GSM8K",
+      "requests": 96,
+      "workers": 96,
+      "arrival_qps": 0.0,
+      "context_tokens": 0,
+      "prefix_mode": "unique",
+      "prompt_length_regime": "short"
+    }
+  },
+  "environment_contract": {
+    "environment_id": "liteserver-159-npu2-ascend910b3-vllm018-20260906",
+    "hardware": {
+      "device_model": "Ascend 910B3",
+      "device_count": 1,
+      "physical_device_id": 2,
+      "topology": "single-node-single-device"
+    },
+    "software": {
+      "inference_scaling_commit": "bd37a2799010724a0d624241635bb42795908ec2",
+      "inference_scaling_source_sha256": "4cd534ae6f5447918ff553fa9e2320457ef163e3c369af83a5dbfcc6f8dad917",
+      "inference_scaling_dirty": true,
+      "vllm_version": "0.18.0+empty",
+      "vllm_ascend_version": "0.18.0",
+      "ascend_driver_version": "25.5.1",
+      "container_image": "quay.io/ascend/vllm-ascend:v0.18.0",
+      "npu_container_device_mode": "isolated_device_mapping"
+    },
+    "models": {
+      "base": {
+        "model_id": "Qwen2.5-1.5B-Instruct",
+        "weights_sha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee"
+      },
+      "proposal": {
+        "model_id": "Qwen2.5-0.5B-Instruct",
+        "weights_sha256": "fdf756fa7fcbe7404d5c60e26bff1a0c8b8aa1f72ced49e7dd0210fe288fb7fe"
+      }
+    }
+  },
+  "objective": {
+    "primary_metric": "completed_qps",
+    "direction": "maximize",
+    "constraints": [
+      {"metric": "latency_seconds.p95", "operator": "<=", "value": 350.0},
+      {"metric": "accuracy", "operator": ">=", "value": 0.25},
+      {"metric": "proposal_stage_wavefront_oversized_wave_count", "operator": "<=", "value": 0.0}
+    ]
+  },
+  "required_metrics": [
+    "completed_qps",
+    "latency_seconds.p50",
+    "latency_seconds.p95",
+    "latency_seconds.p99",
+    "accuracy",
+    "proposal_kv_peak_fraction",
+    "compute.total_forward_token_slots",
+    "compute.estimated_dense_forward_flops",
+    "proposal_stage_wavefront_enabled",
+    "proposal_stage_wavefront_wave_count",
+    "proposal_stage_wavefront_partial_wave_fraction",
+    "proposal_stage_wavefront_oversized_wave_count",
+    "proposal_stage_wavefront_target_release_fraction",
+    "proposal_stage_wavefront_sequence_capacity_release_fraction",
+    "proposal_stage_wavefront_prefill_capacity_release_fraction",
+    "proposal_stage_wavefront_timeout_release_fraction",
+    "proposal_stage_wavefront_mean_admission_wait_seconds",
+    "proposal_stage_wavefront_max_admission_wait_seconds"
+  ],
+  "baseline": {
+    "configuration_id": "stage-wavefront-auto-384",
+    "description": "Validated auto policy selecting 16 groups and 384 sequences per wave",
+    "settings": {
+      "model_runner": "MRV1",
+      "base_max_num_seqs": 128,
+      "proposal_max_num_seqs": 768,
+      "base_max_num_batched_tokens": 32768,
+      "proposal_max_num_batched_tokens": 131072,
+      "base_memory_fraction": 0.54,
+      "proposal_memory_fraction": 0.36,
+      "base_batch_wait_seconds": 0.01,
+      "proposal_batch_wait_seconds": 0.01,
+      "base_score_priority": 1,
+      "base_graph_mode": "FULL_DECODE_ONLY",
+      "base_graph_capture_sizes": [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128],
+      "proposal_graph_mode": "FULL_DECODE_ONLY",
+      "proposal_graph_capture_sizes": [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512],
+      "proposal_stage_wavefront_mode": "auto",
+      "proposal_graph_capture_ceiling": 512,
+      "proposal_stage_wavefront_max_wait_seconds": 0.5,
+      "proposal_stage_wavefront_min_utilization": 0.65
+    }
+  },
+  "candidates": [
+    {
+      "configuration_id": "stage-wavefront-auto-480",
+      "description": "Higher-utilization auto policy selecting 20 groups and 480 sequences per wave",
+      "settings": {
+        "model_runner": "MRV1",
+        "base_max_num_seqs": 128,
+        "proposal_max_num_seqs": 768,
+        "base_max_num_batched_tokens": 32768,
+        "proposal_max_num_batched_tokens": 131072,
+        "base_memory_fraction": 0.54,
+        "proposal_memory_fraction": 0.36,
+        "base_batch_wait_seconds": 0.01,
+        "proposal_batch_wait_seconds": 0.01,
+        "base_score_priority": 1,
+        "base_graph_mode": "FULL_DECODE_ONLY",
+        "base_graph_capture_sizes": [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128],
+        "proposal_graph_mode": "FULL_DECODE_ONLY",
+        "proposal_graph_capture_sizes": [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512],
+        "proposal_stage_wavefront_mode": "auto",
+        "proposal_graph_capture_ceiling": 512,
+        "proposal_stage_wavefront_max_wait_seconds": 0.5,
+        "proposal_stage_wavefront_min_utilization": 0.8
+      }
+    }
+  ]
+}

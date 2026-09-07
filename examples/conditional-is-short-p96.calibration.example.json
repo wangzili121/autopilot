@@ -1,0 +1,132 @@
+{
+  "schema_version": "1.0",
+  "campaign_id": "cis-small-proposal-short-p96",
+  "strong_baseline": true,
+  "protocol": {
+    "pattern": "ABBA",
+    "blocks": 1,
+    "pair_seeds": [2026090401, 2026090402]
+  },
+  "semantic_contract": {
+    "algorithm_id": "conditional_is_small_proposal",
+    "semantic_class": "exact",
+    "graph_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+    "invariants": {
+      "candidate_count": 15,
+      "rollout_count": 3,
+      "block_size": 128,
+      "total_length": 512,
+      "apply_importance_correction": true,
+      "sampler": "native_ascend_categorical",
+      "model_runner": "MRV1",
+      "automatic_prefix_caching": true,
+      "chunked_prefill": true
+    }
+  },
+  "workload_contract": {
+    "workload_id": "gsm8k-short-p96-closed-loop",
+    "dataset_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+    "arrival_trace_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+    "parameters": {
+      "dataset": "GSM8K",
+      "requests": 96,
+      "workers": 96,
+      "arrival_qps": 0.0,
+      "context_tokens": 0,
+      "prefix_mode": "unique",
+      "prompt_length_regime": "short"
+    }
+  },
+  "environment_contract": {
+    "environment_id": "replace-with-frozen-ascend-environment",
+    "hardware": {
+      "device_model": "replace-me",
+      "device_count": 1,
+      "topology": "single-node"
+    },
+    "software": {
+      "inference_scaling_commit": "replace-me",
+      "vllm_commit": "replace-me",
+      "vllm_ascend_commit": "replace-me",
+      "cann_version": "replace-me"
+    },
+    "models": {
+      "base": {
+        "model_id": "Qwen2.5-1.5B-Instruct",
+        "weights_sha256": "replace-me"
+      },
+      "proposal": {
+        "model_id": "Qwen2.5-0.5B-Instruct",
+        "weights_sha256": "replace-me"
+      }
+    }
+  },
+  "objective": {
+    "primary_metric": "completed_qps",
+    "direction": "maximize",
+    "constraints": [
+      {"metric": "latency_seconds.p95", "operator": "<=", "value": 120.0},
+      {"metric": "accuracy", "operator": ">=", "value": 0.44},
+      {"metric": "preemptions", "operator": "<=", "value": 0.0}
+    ]
+  },
+  "required_metrics": [
+    "completed_qps",
+    "latency_seconds.p50",
+    "latency_seconds.p95",
+    "latency_seconds.p99",
+    "accuracy",
+    "preemptions",
+    "proposal_kv_peak_fraction"
+  ],
+  "baseline": {
+    "configuration_id": "manual-256-896",
+    "description": "Best observed short-p96 point; must be revalidated on the frozen stack",
+    "settings": {
+      "model_runner": "MRV1",
+      "base_max_num_seqs": 256,
+      "proposal_max_num_seqs": 896,
+      "base_max_num_batched_tokens": 65536,
+      "proposal_max_num_batched_tokens": 147456,
+      "base_memory_fraction": 0.54,
+      "proposal_memory_fraction": 0.36,
+      "base_batch_wait_seconds": 0.01,
+      "proposal_batch_wait_seconds": 0.01,
+      "base_score_priority": 1
+    }
+  },
+  "candidates": [
+    {
+      "configuration_id": "anchor-128-768",
+      "description": "Historical saturation anchor",
+      "settings": {
+        "model_runner": "MRV1",
+        "base_max_num_seqs": 128,
+        "proposal_max_num_seqs": 768,
+        "base_max_num_batched_tokens": 32768,
+        "proposal_max_num_batched_tokens": 131072,
+        "base_memory_fraction": 0.54,
+        "proposal_memory_fraction": 0.36,
+        "base_batch_wait_seconds": 0.01,
+        "proposal_batch_wait_seconds": 0.01,
+        "base_score_priority": 1
+      }
+    },
+    {
+      "configuration_id": "boundary-128-1024",
+      "description": "Known non-monotonic high-proposal-capacity boundary",
+      "settings": {
+        "model_runner": "MRV1",
+        "base_max_num_seqs": 128,
+        "proposal_max_num_seqs": 1024,
+        "base_max_num_batched_tokens": 32768,
+        "proposal_max_num_batched_tokens": 196608,
+        "base_memory_fraction": 0.54,
+        "proposal_memory_fraction": 0.36,
+        "base_batch_wait_seconds": 0.01,
+        "proposal_batch_wait_seconds": 0.01,
+        "base_score_priority": 1
+      }
+    }
+  ]
+}

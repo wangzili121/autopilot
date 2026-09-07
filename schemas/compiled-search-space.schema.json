@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:compiled-search-space:1.0",
+  "title": "Inference Autopilot Compiled Search Space",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "producer",
+    "space_id",
+    "algorithm_id",
+    "source_space_sha256",
+    "options",
+    "candidates",
+    "audit",
+    "compiled_space_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "producer": {"type": "string", "minLength": 1},
+    "space_id": {"$ref": "#/$defs/id"},
+    "algorithm_id": {"$ref": "#/$defs/id"},
+    "source_space_sha256": {"$ref": "#/$defs/digest"},
+    "capability_profile_sha256": {
+      "oneOf": [
+        {"$ref": "#/$defs/digest"},
+        {"type": "null"}
+      ]
+    },
+    "options": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allow_algorithm_changes", "max_cartesian_product"],
+      "properties": {
+        "allow_algorithm_changes": {"type": "boolean"},
+        "max_cartesian_product": {"type": "integer", "minimum": 1}
+      }
+    },
+    "candidates": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/candidate"}
+    },
+    "audit": {"$ref": "#/$defs/audit"},
+    "compiled_space_sha256": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "scalar": {"type": ["boolean", "number", "string"]},
+    "integerSequence": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "integer", "minimum": 1}
+    },
+    "settingValue": {
+      "oneOf": [
+        {"type": ["boolean", "number", "string"]},
+        {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "integer", "minimum": 1}
+        }
+      ]
+    },
+    "scalarMap": {
+      "type": "object",
+      "propertyNames": {"type": "string", "minLength": 1},
+      "additionalProperties": {"$ref": "#/$defs/settingValue"}
+    },
+    "countMap": {
+      "type": "object",
+      "additionalProperties": {"type": "integer", "minimum": 0}
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_id",
+        "semantic_cohort_id",
+        "knob_values",
+        "deployment_settings",
+        "semantic_settings",
+        "change_scopes",
+        "tuning_layers",
+        "requires_engine_restart"
+      ],
+      "properties": {
+        "candidate_id": {"$ref": "#/$defs/id"},
+        "semantic_cohort_id": {"$ref": "#/$defs/id"},
+        "knob_values": {"$ref": "#/$defs/scalarMap"},
+        "deployment_settings": {"$ref": "#/$defs/scalarMap"},
+        "semantic_settings": {"$ref": "#/$defs/scalarMap"},
+        "change_scopes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": ["deployment", "engine_restart", "policy_boundary", "per_request"]
+          }
+        },
+        "tuning_layers": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "static_deployment",
+              "graph_capture",
+              "hot_policy",
+              "algorithm_semantics"
+            ]
+          }
+        },
+        "requires_engine_restart": {"type": "boolean"}
+      }
+    },
+    "audit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cartesian_product_size",
+        "candidate_count",
+        "rejected_candidate_count",
+        "rejections_by_constraint",
+        "semantic_cohort_count",
+        "by_semantic_cohort",
+        "by_change_scope",
+        "by_tuning_layer",
+        "requires_engine_restart_count"
+      ],
+      "properties": {
+        "cartesian_product_size": {"type": "integer", "minimum": 1},
+        "candidate_count": {"type": "integer", "minimum": 1},
+        "rejected_candidate_count": {"type": "integer", "minimum": 0},
+        "rejections_by_constraint": {"$ref": "#/$defs/countMap"},
+        "semantic_cohort_count": {"type": "integer", "minimum": 1},
+        "by_semantic_cohort": {"$ref": "#/$defs/countMap"},
+        "by_change_scope": {"$ref": "#/$defs/countMap"},
+        "by_tuning_layer": {"$ref": "#/$defs/countMap"},
+        "requires_engine_restart_count": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

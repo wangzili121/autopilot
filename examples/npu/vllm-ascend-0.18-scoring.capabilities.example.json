@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0",
+  "profile_id": "vllm-ascend-0.18-scoring-20260905",
+  "environment_id": "ascend-910b-vllm-ascend-0.18",
+  "capabilities": {
+    "score.native_full_logsoftmax": {
+      "status": "supported",
+      "reason": "The MRV1 prompt-logprob path materializes a full FP32 log-softmax; the capability exists even though it can exceed the workload memory budget",
+      "evidence_sha256": [
+        "478212be1ecd804fc1943af55c0fee83ca991dfdd13028dab324f90c46ea4b20",
+        "5d215760bc90fc53cca7cb55d967c2358d0f72547d4335a3fce526d6b5f935b0"
+      ]
+    },
+    "score.streaming_tiled_reduction": {
+      "status": "unknown",
+      "reason": "A standalone PyTorch/NPU prototype is numerically validated and promising, but no MRV1-integrated implementation has been validated",
+      "evidence_sha256": [
+        "97aaa2a44eb80b5763757e7aa7ae60489bc10a67b1dfd94402148193165d359e",
+        "630ee72a55eecc676389a75dfe2d4279f21fb840f5b1904b81ff101c5eed9b65",
+        "52519f15ca98bc1bd5ffff16188b72bc6fbf17c60eed1d165df95fd2167d6b0c"
+      ]
+    }
+  }
+}

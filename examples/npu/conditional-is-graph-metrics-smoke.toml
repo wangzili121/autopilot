@@ -1,0 +1,92 @@
+[run]
+name = "conditional-is-graph-metrics-smoke"
+sample_count = 4
+subset_seed = 20260808
+seed = 20260808
+
+[models]
+base = "/workspace/models/Qwen2.5-1.5B-Instruct"
+base_source = "Qwen/Qwen2.5-1.5B-Instruct"
+base_revision = "989aa7980e4cf806f80c7fef2b1adb7bc71aa306"
+base_weight_sha256 = "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee"
+base_modelscope_source = "Qwen/Qwen2.5-1.5B-Instruct"
+proposal = "/workspace/models/Qwen2.5-0.5B-Instruct"
+proposal_source = "Qwen/Qwen2.5-0.5B-Instruct"
+proposal_revision = "7ae557604adf67be50417f59c2c2f167def9a775"
+proposal_weight_sha256 = "fdf756fa7fcbe7404d5c60e26bff1a0c8b8aa1f72ced49e7dd0210fe288fb7fe"
+proposal_modelscope_source = "Qwen/Qwen2.5-0.5B-Instruct"
+
+[runtime]
+backend = "vllm"
+device = "npu:0"
+dtype = "float16"
+max_batch_size = 24
+max_batch_tokens = 12288
+max_score_batch_size = 12
+
+[vllm]
+asynchronous = true
+enable_prefix_caching = true
+exact_scoring_backend = "none"
+tensor_parallel_size = 1
+data_parallel_size = 1
+
+[vllm.base]
+gpu_memory_utilization = 0.54
+max_num_seqs = 40
+max_num_batched_tokens = 10240
+score_priority = 1
+
+[vllm.base.engine_kwargs]
+scheduling_policy = "priority"
+
+[vllm.proposal]
+gpu_memory_utilization = 0.36
+max_num_seqs = 96
+max_num_batched_tokens = 12288
+
+[vllm.engine_kwargs]
+enable_chunked_prefill = true
+cudagraph_metrics = true
+compilation_config = { cudagraph_mode = "FULL_DECODE_ONLY" }
+
+[generation]
+max_new_tokens = 192
+
+[sampling]
+temperature = 1.0
+
+[beam]
+num_beams = 8
+
+[best_of_n]
+samples = 8
+
+[mh]
+alpha = 4.0
+block_size = 12
+steps_per_block = 3
+suffix_schedule = "uniform"
+
+[conditional_is]
+candidate_count = 8
+rollout_count = 3
+rollout_design = "iid"
+block_size = 48
+reward_temperature = 0.1
+reward = "self_consistency"
+importance_log_ratio_clip = 10.0
+
+[iterated_is]
+pool_size = 3
+updates = 4
+pilot_samples = 8
+reward = "frozen_consensus"
+
+[matched_target]
+reward_temperature = 0.04
+
+[replay]
+history_rollouts = 2
+fresh_rollouts = 1
+truncation = 8.0

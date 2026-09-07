@@ -1,0 +1,25 @@
+diff --git a/vllm_ascend/worker/model_runner_v1.py b/vllm_ascend/worker/model_runner_v1.py
+--- a/vllm_ascend/worker/model_runner_v1.py
++++ b/vllm_ascend/worker/model_runner_v1.py
+@@ -1992,11 +1992,21 @@ class NPUModelRunner(GPUModelRunner):
+                 assert batch_descriptor.num_tokens == num_tokens_padded
+         cudagraph_stats = None
+         if self.vllm_config.observability_config.cudagraph_metrics:
++            num_computed_tokens = self.input_batch.num_computed_tokens_cpu[:num_reqs]
++            num_prompt_tokens = self.input_batch.num_prompt_tokens[:num_reqs]
++            decode_mask = num_computed_tokens >= num_prompt_tokens
++            if np.all(decode_mask):
++                execution_phase = "decode"
++            elif np.any(decode_mask):
++                execution_phase = "mixed"
++            else:
++                execution_phase = "prefill"
+             cudagraph_stats = CUDAGraphStat(
+                 num_unpadded_tokens=num_tokens,
+                 num_padded_tokens=batch_descriptor.num_tokens,
+                 num_paddings=batch_descriptor.num_tokens - num_tokens,
+                 runtime_mode=str(cudagraph_mode),
++                execution_phase=execution_phase,
+             )
+ 
+         return (

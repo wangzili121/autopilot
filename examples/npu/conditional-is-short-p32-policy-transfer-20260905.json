@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "transfer_id": "cis-small-proposal-short-p16-to-p32-npu2-20260905-r1",
+  "policy_bundle_sha256": "246a353463d6ec2deebc0d31c489713164a626d2442c55189a87406fdf0478fe",
+  "campaign_id": "cis-small-proposal-short-p32-policy-transfer-npu2-20260905-r1",
+  "protocol": {
+    "pattern": "ABBA",
+    "blocks": 1,
+    "pair_seeds": [2026090597, 2026090598]
+  },
+  "target_workload_contract": {
+    "workload_id": "gsm8k-short-p32-closed-loop-20260905-transfer",
+    "dataset_sha256": "3730d312f6e3440559ace48831e51066acaca737f6eabec99bccb9e4b3c39d14",
+    "arrival_trace_sha256": "f42d6213f3053de61647f1a159207d44b5369b6ec71cf730907cdbd4da094a38",
+    "parameters": {
+      "arrival_qps": 0.0,
+      "context_tokens": 0,
+      "dataset": "GSM8K",
+      "prefix_mode": "unique",
+      "prompt_length_regime": "short",
+      "requests": 32,
+      "workers": 32
+    }
+  },
+  "allowed_guard_deviations": [
+    "environment_id",
+    "exact_static_feature:workload.workers",
+    "workload_id"
+  ],
+  "include_replay_control": true
+}

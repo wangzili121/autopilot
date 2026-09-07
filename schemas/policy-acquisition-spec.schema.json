@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:policy-acquisition-spec:1.0",
+  "title": "Inference Autopilot Policy Acquisition Spec",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "acquisition_id",
+    "policy_bundle_sha256",
+    "candidate_budget",
+    "require_policy_eligible",
+    "exclude_exactly_observed",
+    "maximum_changed_knobs",
+    "maximum_normalized_distance",
+    "minimum_normalized_optimistic_improvement",
+    "weights"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "acquisition_id": {"$ref": "#/$defs/id"},
+    "policy_bundle_sha256": {"$ref": "#/$defs/digest"},
+    "candidate_budget": {"type": "integer", "minimum": 1},
+    "require_policy_eligible": {"type": "boolean"},
+    "exclude_exactly_observed": {"type": "boolean"},
+    "maximum_changed_knobs": {"type": "integer", "minimum": 1},
+    "maximum_normalized_distance": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "minimum_normalized_optimistic_improvement": {
+      "type": "number",
+      "minimum": 0
+    },
+    "weights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "optimistic_improvement",
+        "uncertainty_width",
+        "normalized_distance",
+        "changed_knobs"
+      ],
+      "properties": {
+        "optimistic_improvement": {"type": "number", "minimum": 0},
+        "uncertainty_width": {"type": "number", "minimum": 0},
+        "normalized_distance": {"type": "number", "minimum": 0},
+        "changed_knobs": {"type": "number", "minimum": 0}
+      }
+    }
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

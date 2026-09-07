@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:evidence-ledger:1.0",
+  "title": "Inference Autopilot Evidence Ledger",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "producer", "records", "rejections"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "producer": {"type": "string", "minLength": 1},
+    "records": {"type": "array", "items": {"$ref": "#/$defs/record"}},
+    "rejections": {"type": "array", "items": {"$ref": "#/$defs/rejection"}}
+  },
+  "$defs": {
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "imported_format", "locator"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "imported_format": {"type": "string", "minLength": 1},
+        "locator": {"type": "string", "minLength": 1}
+      }
+    },
+    "quality": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["grade", "purpose", "claim_eligible", "reasons"],
+      "properties": {
+        "grade": {
+          "enum": ["A_formal_paired", "B_controlled_single", "C_diagnostic", "X_excluded"]
+        },
+        "purpose": {
+          "enum": [
+            "selector_fit_and_claim",
+            "calibration_only",
+            "diagnostic_only",
+            "constraint_only"
+          ]
+        },
+        "claim_eligible": {"type": "boolean"},
+        "reasons": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+      }
+    },
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_id",
+        "campaign",
+        "variant",
+        "source",
+        "workload",
+        "configuration",
+        "algorithm",
+        "environment",
+        "metrics",
+        "quality",
+        "tags"
+      ],
+      "properties": {
+        "record_id": {"type": "string", "minLength": 1},
+        "campaign": {"type": "string", "minLength": 1},
+        "variant": {"type": "string", "minLength": 1},
+        "source": {"$ref": "#/$defs/source"},
+        "workload": {"type": "object"},
+        "configuration": {"type": "object"},
+        "algorithm": {"type": "object"},
+        "environment": {"type": "object"},
+        "metrics": {"type": "object", "minProperties": 1},
+        "quality": {"$ref": "#/$defs/quality"},
+        "tags": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+      }
+    },
+    "rejection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "reason"],
+      "properties": {
+        "path": {"type": "string"},
+        "sha256": {"type": ["string", "null"]},
+        "reason": {"type": "string"}
+      }
+    }
+  }
+}

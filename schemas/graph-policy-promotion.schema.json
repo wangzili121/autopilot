@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:graph-policy-promotion:1.0",
+  "title": "Inference Autopilot Graph Policy Promotion",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "corpus_id",
+    "corpus_sha256",
+    "policy",
+    "minimum_train_regimes",
+    "minimum_holdout_regimes",
+    "train_regime_count",
+    "holdout_regime_count",
+    "eligible",
+    "rejection_reasons",
+    "coverage",
+    "graph_policy_promotion_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "corpus_id": {"$ref": "#/$defs/id"},
+    "corpus_sha256": {"$ref": "#/$defs/sha256"},
+    "policy": {"type": "object"},
+    "minimum_train_regimes": {"type": "integer", "minimum": 1},
+    "minimum_holdout_regimes": {"type": "integer", "minimum": 1},
+    "train_regime_count": {"type": "integer", "minimum": 1},
+    "holdout_regime_count": {"type": "integer", "minimum": 1},
+    "eligible": {"type": "boolean"},
+    "rejection_reasons": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "insufficient_train_regimes",
+          "insufficient_holdout_regimes",
+          "no_policy_change",
+          "holdout_mapping_not_exact"
+        ]
+      }
+    },
+    "coverage": {
+      "type": "array",
+      "minItems": 2,
+      "items": {"$ref": "#/$defs/coverageRecord"}
+    },
+    "graph_policy_promotion_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "coverageRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["regime_id", "split", "profile_id", "coverage"],
+      "properties": {
+        "regime_id": {"$ref": "#/$defs/id"},
+        "split": {"enum": ["train", "holdout"]},
+        "profile_id": {"$ref": "#/$defs/id"},
+        "coverage": {"type": "object"}
+      }
+    }
+  }
+}

@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:deployment-search-space:1.0",
+  "title": "Inference Autopilot Deployment Search Space",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "space_id",
+    "algorithm_id",
+    "fixed_settings",
+    "knobs",
+    "constraints"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "space_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "algorithm_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "fixed_settings": {
+      "type": "object",
+      "propertyNames": {"pattern": "^[a-z0-9][a-z0-9._-]*$"},
+      "additionalProperties": {"$ref": "#/$defs/settingValue"}
+    },
+    "knobs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/knob"}
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {"$ref": "#/$defs/sumConstraint"},
+          {"$ref": "#/$defs/combinationConstraint"}
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "scalar": {"type": ["boolean", "number", "string"]},
+    "integerSequence": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "integer", "minimum": 1}
+    },
+    "settingValue": {
+      "oneOf": [
+        {"type": ["boolean", "number", "string"]},
+        {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "integer", "minimum": 1}
+        }
+      ]
+    },
+    "domain": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "values"],
+          "properties": {
+            "kind": {"const": "choices"},
+            "values": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {"$ref": "#/$defs/settingValue"}
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "minimum", "maximum", "step"],
+          "properties": {
+            "kind": {"const": "range"},
+            "minimum": {"type": "number"},
+            "maximum": {"type": "number"},
+            "step": {"type": "number", "exclusiveMinimum": 0}
+          }
+        }
+      ]
+    },
+    "knob": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "setting_name",
+        "value_type",
+        "domain",
+        "change_scope",
+        "semantic_effect",
+        "description"
+      ],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "setting_name": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9._-]*$"
+        },
+        "value_type": {
+          "enum": [
+            "integer",
+            "number",
+            "boolean",
+            "string",
+            "integer_sequence"
+          ]
+        },
+        "domain": {"$ref": "#/$defs/domain"},
+        "change_scope": {
+          "enum": ["deployment", "engine_restart", "policy_boundary", "per_request"]
+        },
+        "semantic_effect": {"enum": ["preserves_algorithm", "changes_algorithm"]},
+        "tuning_layer": {
+          "enum": [
+            "static_deployment",
+            "graph_capture",
+            "hot_policy",
+            "algorithm_semantics"
+          ]
+        },
+        "applies_to_stages": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"}
+        },
+        "capability_requirements": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/capabilityRequirement"}
+        },
+        "description": {"type": "string"}
+      }
+    },
+    "capabilityRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["capability_id", "values"],
+      "properties": {
+        "capability_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9._-]*$"
+        },
+        "values": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/settingValue"}
+        }
+      }
+    },
+    "sumConstraint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "parameters", "value"],
+      "properties": {
+        "kind": {"const": "sum_less_equal"},
+        "parameters": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {"type": "string"}
+        },
+        "value": {"type": "number"}
+      }
+    },
+    "combinationConstraint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "parameters", "values"],
+      "properties": {
+        "kind": {"const": "allowed_combinations"},
+        "parameters": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {"type": "string"}
+        },
+        "values": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "items": {"$ref": "#/$defs/settingValue"}
+          }
+        }
+      }
+    }
+  }
+}

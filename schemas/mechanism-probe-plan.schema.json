@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:mechanism-probe-plan:1.0",
+  "title": "Inference Autopilot Mechanism Probe Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "producer",
+    "probe_id",
+    "status",
+    "source_spec_sha256",
+    "graph_sha256",
+    "compiled_space_sha256",
+    "feature_table_sha256",
+    "selection_context",
+    "control",
+    "diagnostics",
+    "selections",
+    "ranked_candidates",
+    "audit",
+    "mechanism_probe_plan_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "producer": {"type": "string", "minLength": 1},
+    "probe_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "status": {"enum": ["planned", "no_candidate", "insufficient_evidence"]},
+    "source_spec_sha256": {"$ref": "#/$defs/sha256"},
+    "graph_sha256": {"$ref": "#/$defs/sha256"},
+    "compiled_space_sha256": {"$ref": "#/$defs/sha256"},
+    "feature_table_sha256": {"$ref": "#/$defs/sha256"},
+    "selection_context": {"type": "object"},
+    "control": {"type": "object"},
+    "diagnostics": {"type": "object"},
+    "selections": {"type": "array", "items": {"type": "object"}},
+    "ranked_candidates": {"type": "array", "items": {"type": "object"}},
+    "audit": {"type": "object"},
+    "mechanism_probe_plan_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

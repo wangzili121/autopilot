@@ -1,0 +1,194 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:policy-experiment-plan:1.0",
+  "title": "Inference Autopilot Policy Experiment Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "producer",
+    "acquisition_id",
+    "status",
+    "source_spec_sha256",
+    "policy_bundle_sha256",
+    "compiled_space_sha256",
+    "feature_table_sha256",
+    "selection_context",
+    "objective",
+    "control",
+    "selections",
+    "ranked_candidates",
+    "audit",
+    "policy_experiment_plan_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "producer": {"type": "string", "minLength": 1},
+    "acquisition_id": {"$ref": "#/$defs/id"},
+    "status": {"enum": ["planned", "no_candidate"]},
+    "source_spec_sha256": {"$ref": "#/$defs/digest"},
+    "policy_bundle_sha256": {"$ref": "#/$defs/digest"},
+    "compiled_space_sha256": {"$ref": "#/$defs/digest"},
+    "feature_table_sha256": {"$ref": "#/$defs/digest"},
+    "selection_context": {"type": "object"},
+    "objective": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target", "direction", "target_scale"],
+      "properties": {
+        "target": {"type": "string", "minLength": 1},
+        "direction": {"enum": ["maximize", "minimize"]},
+        "target_scale": {"type": "number", "exclusiveMinimum": 0}
+      }
+    },
+    "control": {"$ref": "#/$defs/control"},
+    "selections": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/evaluation"}
+    },
+    "ranked_candidates": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/evaluation"}
+    },
+    "audit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_budget",
+        "compiled_candidate_count",
+        "evaluated_candidate_count",
+        "eligible_candidate_count",
+        "selected_candidate_count",
+        "rejections_by_reason"
+      ],
+      "properties": {
+        "candidate_budget": {"type": "integer", "minimum": 1},
+        "compiled_candidate_count": {"type": "integer", "minimum": 1},
+        "policy_reported_candidate_count": {"type": "integer", "minimum": 1},
+        "surrogate_evaluated_candidate_count": {"type": "integer", "minimum": 1},
+        "evaluated_candidate_count": {"type": "integer", "minimum": 1},
+        "eligible_candidate_count": {"type": "integer", "minimum": 0},
+        "selected_candidate_count": {"type": "integer", "minimum": 0},
+        "rejections_by_reason": {
+          "type": "object",
+          "additionalProperties": {"type": "integer", "minimum": 0}
+        }
+      }
+    },
+    "policy_experiment_plan_sha256": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "scalar": {"type": ["boolean", "number", "string"]},
+    "settingValue": {
+      "oneOf": [
+        {"type": ["boolean", "number", "string"]},
+        {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "integer", "minimum": 1}
+        }
+      ]
+    },
+    "scalarMap": {
+      "type": "object",
+      "propertyNames": {"type": "string", "minLength": 1},
+      "additionalProperties": {"$ref": "#/$defs/scalar"}
+    },
+    "settingMap": {
+      "type": "object",
+      "propertyNames": {"type": "string", "minLength": 1},
+      "additionalProperties": {"$ref": "#/$defs/settingValue"}
+    },
+    "control": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_id",
+        "deployment_settings",
+        "knob_values",
+        "observed_response_row_ids"
+      ],
+      "properties": {
+        "candidate_id": {"$ref": "#/$defs/id"},
+        "deployment_settings": {"$ref": "#/$defs/settingMap"},
+        "knob_values": {"$ref": "#/$defs/settingMap"},
+        "observed_response_row_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_id",
+        "deployment_settings",
+        "knob_values",
+        "changed_knobs",
+        "observed_response_row_ids",
+        "policy_eligible",
+        "policy_rejection_reasons",
+        "nearest_normalized_distance",
+        "failure_probability",
+        "objective_estimate",
+        "normalized_optimistic_improvement",
+        "normalized_uncertainty_width",
+        "acquisition_score",
+        "acquisition_eligible",
+        "acquisition_rejection_reasons",
+        "rationale_tags"
+      ],
+      "properties": {
+        "candidate_id": {"$ref": "#/$defs/id"},
+        "deployment_settings": {"$ref": "#/$defs/settingMap"},
+        "knob_values": {"$ref": "#/$defs/settingMap"},
+        "changed_knobs": {"type": "array", "items": {"type": "object"}},
+        "inactive_changed_knobs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "directional_regression_blockers": {
+          "type": "array",
+          "items": {"type": "object"}
+        },
+        "observed_response_row_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "policy_eligible": {"type": "boolean"},
+        "policy_rejection_reasons": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "nearest_normalized_distance": {"type": "number", "minimum": 0},
+        "failure_probability": {"type": "number", "minimum": 0, "maximum": 1},
+        "objective_estimate": {
+          "oneOf": [{"type": "null"}, {"type": "object"}]
+        },
+        "normalized_optimistic_improvement": {"type": "number"},
+        "normalized_uncertainty_width": {"type": "number", "minimum": 0},
+        "acquisition_score": {
+          "oneOf": [{"type": "null"}, {"type": "number"}]
+        },
+        "acquisition_eligible": {"type": "boolean"},
+        "acquisition_rejection_reasons": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "rationale_tags": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}

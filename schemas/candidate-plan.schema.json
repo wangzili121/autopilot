@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:candidate-plan:1.0",
+  "title": "Inference Autopilot Candidate Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "producer",
+    "design_id",
+    "design_spec_sha256",
+    "source_space_sha256",
+    "compiled_space_sha256",
+    "evidence_table_sha256",
+    "selection_context",
+    "selections",
+    "audit",
+    "candidate_plan_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "producer": {"type": "string", "minLength": 1},
+    "design_id": {"$ref": "#/$defs/id"},
+    "design_spec_sha256": {"$ref": "#/$defs/digest"},
+    "source_space_sha256": {"$ref": "#/$defs/digest"},
+    "compiled_space_sha256": {"$ref": "#/$defs/digest"},
+    "evidence_table_sha256": {
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]
+    },
+    "selection_context": {"$ref": "#/$defs/context"},
+    "selections": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/selection"}
+    },
+    "audit": {"$ref": "#/$defs/audit"},
+    "candidate_plan_sha256": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "scalar": {"type": ["boolean", "number", "string"]},
+    "settingValue": {
+      "oneOf": [
+        {"type": ["boolean", "number", "string"]},
+        {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "integer", "minimum": 1}
+        }
+      ]
+    },
+    "scalarMap": {
+      "type": "object",
+      "propertyNames": {"type": "string", "minLength": 1},
+      "additionalProperties": {"$ref": "#/$defs/scalar"}
+    },
+    "settingMap": {
+      "type": "object",
+      "propertyNames": {"type": "string", "minLength": 1},
+      "additionalProperties": {"$ref": "#/$defs/settingValue"}
+    },
+    "stringArray": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "countMap": {
+      "type": "object",
+      "additionalProperties": {"type": "integer", "minimum": 0}
+    },
+    "range": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minimum", "maximum"],
+      "properties": {
+        "minimum": {"type": "number"},
+        "maximum": {"type": "number"}
+      }
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "algorithm_id",
+        "semantic_cohort_id",
+        "graph_sha256",
+        "accepted_evidence_semantic_classes",
+        "workload_id",
+        "environment_id",
+        "static_features",
+        "static_feature_ranges"
+      ],
+      "properties": {
+        "algorithm_id": {"$ref": "#/$defs/id"},
+        "semantic_cohort_id": {"$ref": "#/$defs/id"},
+        "graph_sha256": {"$ref": "#/$defs/digest"},
+        "accepted_evidence_semantic_classes": {"$ref": "#/$defs/stringArray"},
+        "workload_id": {"$ref": "#/$defs/id"},
+        "environment_id": {"$ref": "#/$defs/id"},
+        "static_features": {"$ref": "#/$defs/scalarMap"},
+        "static_feature_ranges": {
+          "type": "object",
+          "additionalProperties": {"$ref": "#/$defs/range"}
+        }
+      }
+    },
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "selection_index",
+        "candidate_id",
+        "semantic_cohort_id",
+        "reason",
+        "evidence_row_ids",
+        "boundary_tags",
+        "minimum_normalized_distance",
+        "knob_values",
+        "deployment_settings",
+        "semantic_settings"
+      ],
+      "properties": {
+        "selection_index": {"type": "integer", "minimum": 0},
+        "candidate_id": {"$ref": "#/$defs/id"},
+        "semantic_cohort_id": {"$ref": "#/$defs/id"},
+        "reason": {
+          "enum": [
+            "baseline",
+            "evidence_anchor",
+            "constraint_boundary",
+            "domain_boundary",
+            "space_filling"
+          ]
+        },
+        "evidence_row_ids": {"$ref": "#/$defs/stringArray"},
+        "boundary_tags": {"$ref": "#/$defs/stringArray"},
+        "minimum_normalized_distance": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "knob_values": {"$ref": "#/$defs/settingMap"},
+        "deployment_settings": {"$ref": "#/$defs/settingMap"},
+        "semantic_settings": {"$ref": "#/$defs/settingMap"}
+      }
+    },
+    "audit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_budget",
+        "selected_candidate_count",
+        "available_candidate_count",
+        "unselected_candidate_count",
+        "by_selection_reason",
+        "evidence",
+        "boundary_tags_covered"
+      ],
+      "properties": {
+        "candidate_budget": {"type": "integer", "minimum": 1},
+        "selected_candidate_count": {"type": "integer", "minimum": 1},
+        "available_candidate_count": {"type": "integer", "minimum": 1},
+        "unselected_candidate_count": {"type": "integer", "minimum": 0},
+        "by_selection_reason": {"$ref": "#/$defs/countMap"},
+        "evidence": {"$ref": "#/$defs/countMap"},
+        "boundary_tags_covered": {"$ref": "#/$defs/stringArray"}
+      }
+    }
+  }
+}

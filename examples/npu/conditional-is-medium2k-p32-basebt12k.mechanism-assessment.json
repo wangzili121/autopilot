@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "assessment_id": "cis-small-proposal-medium2k-p32-basebt12k-npu2-20260906-r1",
+  "mechanism_probe_plan_sha256": "1bdcba9fbc7264bf970cd25c44fab62a441e79f98628f4e045a96a685d87286b",
+  "calibration_plan_sha256": "4222d2ba06cf6bcc7ba9490bd06dcb26a5a4d5d73b3eb2d0ca8fd11cfe55c095",
+  "candidate_configuration_id": "conditional-is-medium2k-p32-mechanism-v1--6493f51d06aa5aff",
+  "minimum_complete_pairs": 2,
+  "minimum_median_improvement_fraction": 0.03,
+  "require_effect_outside_replay_noise": true,
+  "require_quality_constraints": true
+}

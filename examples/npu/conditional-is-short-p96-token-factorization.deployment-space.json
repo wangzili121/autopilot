@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0",
+  "space_id": "conditional-is-short-p96-token-factorization-v1",
+  "algorithm_id": "conditional_is_small_proposal",
+  "fixed_settings": {
+    "model_runner": "MRV1",
+    "base_max_num_seqs": 128,
+    "proposal_max_num_seqs": 768,
+    "base_memory_fraction": 0.54,
+    "proposal_memory_fraction": 0.36,
+    "base_batch_wait_seconds": 0.01,
+    "proposal_batch_wait_seconds": 0.01,
+    "base_score_priority": 1
+  },
+  "knobs": [
+    {
+      "name": "base.max_num_batched_tokens",
+      "setting_name": "base_max_num_batched_tokens",
+      "value_type": "integer",
+      "domain": {
+        "kind": "choices",
+        "values": [10240, 16384, 24576, 32768, 49152, 65536]
+      },
+      "change_scope": "engine_restart",
+      "semantic_effect": "preserves_algorithm",
+      "tuning_layer": "static_deployment",
+      "applies_to_stages": ["candidate_generate", "target_score"],
+      "description": "Base generation and exact target-scoring token admission budget"
+    },
+    {
+      "name": "proposal.max_num_batched_tokens",
+      "setting_name": "proposal_max_num_batched_tokens",
+      "value_type": "integer",
+      "domain": {
+        "kind": "choices",
+        "values": [12288, 24576, 49152, 65536, 98304, 131072, 147456]
+      },
+      "change_scope": "engine_restart",
+      "semantic_effect": "preserves_algorithm",
+      "tuning_layer": "static_deployment",
+      "applies_to_stages": ["proposal_rollout_generate"],
+      "description": "Proposal rollout token admission budget"
+    }
+  ],
+  "constraints": []
+}

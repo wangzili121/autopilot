@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:policy-transfer-assessment:1.0",
+  "title": "Inference Autopilot Policy Transfer Assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "producer",
+    "assessment_id",
+    "status",
+    "source",
+    "requirements",
+    "effect",
+    "guard_assessment",
+    "eligible_for_target_policy_evidence",
+    "source_policy_activation_eligible",
+    "target_policy_required",
+    "reasons",
+    "audit",
+    "policy_transfer_assessment_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "producer": {"type": "string", "minLength": 1},
+    "assessment_id": {
+      "$ref": "policy-transfer-assessment-spec.schema.json#/$defs/id"
+    },
+    "status": {
+      "enum": ["positive_transfer_evidence", "rejected", "insufficient_evidence"]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "assessment_spec_sha256",
+        "policy_transfer_plan_sha256",
+        "calibration_plan_sha256",
+        "calibration_assessment_sha256"
+      ],
+      "properties": {
+        "assessment_spec_sha256": {
+          "$ref": "policy-transfer-assessment-spec.schema.json#/$defs/digest"
+        },
+        "policy_transfer_plan_sha256": {
+          "$ref": "policy-transfer-assessment-spec.schema.json#/$defs/digest"
+        },
+        "calibration_plan_sha256": {
+          "$ref": "policy-transfer-assessment-spec.schema.json#/$defs/digest"
+        },
+        "calibration_assessment_sha256": {
+          "$ref": "policy-transfer-assessment-spec.schema.json#/$defs/digest"
+        }
+      }
+    },
+    "requirements": {"type": "object"},
+    "effect": {"type": ["object", "null"]},
+    "guard_assessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "declared_deviations",
+        "deferred_checks",
+        "source_guard_match"
+      ],
+      "properties": {
+        "declared_deviations": {"type": "array", "items": {"type": "object"}},
+        "deferred_checks": {"type": "array", "items": {"type": "object"}},
+        "source_guard_match": {"type": "boolean"}
+      }
+    },
+    "eligible_for_target_policy_evidence": {"type": "boolean"},
+    "source_policy_activation_eligible": {"type": "boolean"},
+    "target_policy_required": {"type": "boolean"},
+    "reasons": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "audit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "declared_guard_deviation_count",
+        "deferred_guard_check_count",
+        "deferred_guard_violation_count",
+        "calibration_issue_count"
+      ],
+      "properties": {
+        "declared_guard_deviation_count": {"type": "integer", "minimum": 0},
+        "deferred_guard_check_count": {"type": "integer", "minimum": 0},
+        "deferred_guard_violation_count": {"type": "integer", "minimum": 0},
+        "calibration_issue_count": {"type": "integer", "minimum": 0}
+      }
+    },
+    "policy_transfer_assessment_sha256": {
+      "$ref": "policy-transfer-assessment-spec.schema.json#/$defs/digest"
+    }
+  }
+}

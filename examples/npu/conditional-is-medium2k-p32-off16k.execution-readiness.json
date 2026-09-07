@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "readiness_id": "conditional-is-medium2k-shared-host-readiness-r1",
+  "minimum_attempt_count": 5,
+  "maximum_environment_retries": 2,
+  "wilson_z": 1.6448536269514722,
+  "minimum_clean_probability_lower_bound": 0.5,
+  "minimum_campaign_completion_probability": 0.8,
+  "maximum_expected_npu_hours": 2.0,
+  "duration_safety_factor": 1.15,
+  "probability_model": "stationary_independent_bernoulli",
+  "reject_non_environment_failures": true
+}

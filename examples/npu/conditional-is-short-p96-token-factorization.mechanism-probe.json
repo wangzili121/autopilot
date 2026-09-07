@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "probe_id": "conditional-is-short-p96-token-factorization-round1",
+  "compiled_space_sha256": "edef40cede80e914c7ae3b32c0ac84b8410f64b9c55dad466fffb2f7c851a23b",
+  "selection_context": {
+    "algorithm_id": "conditional_is_small_proposal",
+    "semantic_cohort_id": "conditional_is_small_proposal",
+    "graph_sha256": "a46acdc960d12f5dab0af3515d083f1cf6780af34870e1febc01f85e86249cea",
+    "accepted_evidence_semantic_classes": ["exact"],
+    "workload_id": "gsm8k-short-p96-closed-loop-20260906-historical-anchors",
+    "environment_id": "liteserver-189-npu7-ascend910b3-vllm018-20260906",
+    "static_features": {
+      "workload.arrival_qps": 0.0,
+      "workload.context_tokens": 0,
+      "workload.prefix_mode": "unique",
+      "workload.prompt_length_regime": "short",
+      "workload.requests": 96,
+      "workload.workers": 96
+    },
+    "static_feature_ranges": {
+      "workload.prompt_tokens.mean": {
+        "minimum": 80,
+        "maximum": 200
+      }
+    }
+  },
+  "control_settings": {
+    "model_runner": "MRV1",
+    "base_max_num_seqs": 128,
+    "proposal_max_num_seqs": 768,
+    "base_max_num_batched_tokens": 32768,
+    "proposal_max_num_batched_tokens": 131072,
+    "base_memory_fraction": 0.54,
+    "proposal_memory_fraction": 0.36,
+    "base_batch_wait_seconds": 0.01,
+    "proposal_batch_wait_seconds": 0.01,
+    "base_score_priority": 1
+  },
+  "candidate_budget": 1,
+  "maximum_changed_knobs": 1,
+  "minimum_formal_control_rows": 2,
+  "exclude_exactly_observed": true,
+  "thresholds": {
+    "compute_dominance_fraction": 0.6,
+    "capacity_utilization_fraction": 0.8,
+    "queue_to_running_ratio": 1.0,
+    "kv_pressure_fraction": 0.8,
+    "minimum_mechanism_score": 0.05
+  }
+}

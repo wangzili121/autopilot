@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:runtime-routing-request:1.0",
+  "title": "Inference Autopilot Runtime Routing Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "decision_id",
+    "runtime_policy_pool_sha256",
+    "safe_boundary",
+    "context",
+    "endpoint_states",
+    "routing_request_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "decision_id": {
+      "$ref": "runtime-policy-pool-spec.schema.json#/$defs/id"
+    },
+    "runtime_policy_pool_sha256": {
+      "$ref": "runtime-policy-pool-spec.schema.json#/$defs/digest"
+    },
+    "safe_boundary": {"type": "boolean"},
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "algorithm_id",
+        "semantic_cohort_id",
+        "semantic_class",
+        "graph_sha256",
+        "workload_id",
+        "environment_id",
+        "static_features"
+      ],
+      "properties": {
+        "algorithm_id": {
+          "$ref": "runtime-policy-pool-spec.schema.json#/$defs/id"
+        },
+        "semantic_cohort_id": {
+          "$ref": "runtime-policy-pool-spec.schema.json#/$defs/id"
+        },
+        "semantic_class": {
+          "$ref": "runtime-policy-pool-spec.schema.json#/$defs/id"
+        },
+        "graph_sha256": {
+          "$ref": "runtime-policy-pool-spec.schema.json#/$defs/digest"
+        },
+        "workload_id": {
+          "$ref": "runtime-policy-pool-spec.schema.json#/$defs/id"
+        },
+        "environment_id": {
+          "$ref": "runtime-policy-pool-spec.schema.json#/$defs/id"
+        },
+        "static_features": {"$ref": "#/$defs/scalarMap"}
+      }
+    },
+    "endpoint_states": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/endpointState"}
+    },
+    "routing_request_sha256": {
+      "$ref": "runtime-policy-pool-spec.schema.json#/$defs/digest"
+    }
+  },
+  "$defs": {
+    "scalarMap": {
+      "type": "object",
+      "propertyNames": {"type": "string", "minLength": 1},
+      "additionalProperties": {"type": ["boolean", "number", "string"]}
+    },
+    "endpointState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "endpoint_id",
+        "configuration_sha256",
+        "ready",
+        "accepting_requests",
+        "consecutive_failures",
+        "live_metric_samples",
+        "live_metrics"
+      ],
+      "properties": {
+        "endpoint_id": {
+          "$ref": "runtime-policy-pool-spec.schema.json#/$defs/id"
+        },
+        "configuration_sha256": {
+          "$ref": "runtime-policy-pool-spec.schema.json#/$defs/digest"
+        },
+        "ready": {"type": "boolean"},
+        "accepting_requests": {"type": "boolean"},
+        "consecutive_failures": {"type": "integer", "minimum": 0},
+        "live_metric_samples": {"type": "integer", "minimum": 0},
+        "live_metrics": {"$ref": "#/$defs/scalarMap"}
+      }
+    }
+  }
+}

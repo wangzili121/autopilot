@@ -1,0 +1,216 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:selector-feature-table:1.0",
+  "title": "Inference Autopilot Selector Feature Table",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "producer",
+    "feature_catalog",
+    "rows",
+    "audit"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "producer": {"type": "string", "minLength": 1},
+    "feature_catalog": {"$ref": "#/$defs/catalog"},
+    "rows": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/row"}
+    },
+    "audit": {"$ref": "#/$defs/audit"}
+  },
+  "$defs": {
+    "scalar": {
+      "type": ["boolean", "number", "string"]
+    },
+    "featureMap": {
+      "type": "object",
+      "propertyNames": {"type": "string", "minLength": 1},
+      "additionalProperties": {"$ref": "#/$defs/scalar"}
+    },
+    "stringArray": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "nullableString": {"type": ["string", "null"]},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "locator"],
+      "properties": {
+        "path": {"$ref": "#/$defs/nullableString"},
+        "sha256": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+          ]
+        },
+        "locator": {"type": "string", "minLength": 1},
+        "imported_format": {"type": "string", "minLength": 1}
+      }
+    },
+    "cohort": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "algorithm_id",
+        "semantic_class",
+        "graph_sha256",
+        "workload_id",
+        "environment_id"
+      ],
+      "properties": {
+        "algorithm_id": {"type": "string", "minLength": 1},
+        "semantic_class": {"type": "string", "minLength": 1},
+        "graph_sha256": {"$ref": "#/$defs/nullableString"},
+        "workload_id": {"$ref": "#/$defs/nullableString"},
+        "environment_id": {"$ref": "#/$defs/nullableString"}
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["grade", "purpose", "claim_eligible", "reasons"],
+      "properties": {
+        "grade": {
+          "enum": [
+            "A_formal_paired",
+            "B_controlled_single",
+            "C_diagnostic",
+            "X_excluded",
+            "ungraded"
+          ]
+        },
+        "purpose": {
+          "enum": [
+            "selector_fit_and_claim",
+            "calibration_only",
+            "diagnostic_only",
+            "constraint_only",
+            "pending_assessment"
+          ]
+        },
+        "claim_eligible": {"type": "boolean"},
+        "reasons": {"$ref": "#/$defs/stringArray"}
+      }
+    },
+    "eligibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "response_model_fit",
+        "prior_construction",
+        "diagnostic_analysis",
+        "feasibility_model",
+        "performance_claim",
+        "reasons"
+      ],
+      "properties": {
+        "response_model_fit": {"type": "boolean"},
+        "prior_construction": {"type": "boolean"},
+        "diagnostic_analysis": {"type": "boolean"},
+        "feasibility_model": {"type": "boolean"},
+        "performance_claim": {"type": "boolean"},
+        "reasons": {"$ref": "#/$defs/stringArray"}
+      }
+    },
+    "missing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "selector_requirements",
+        "prior_requirements",
+        "feasibility_requirements",
+        "targets"
+      ],
+      "properties": {
+        "selector_requirements": {"$ref": "#/$defs/stringArray"},
+        "prior_requirements": {"$ref": "#/$defs/stringArray"},
+        "feasibility_requirements": {"$ref": "#/$defs/stringArray"},
+        "targets": {"$ref": "#/$defs/stringArray"}
+      }
+    },
+    "row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "row_id",
+        "source_kind",
+        "source",
+        "campaign",
+        "variant",
+        "cohort",
+        "evidence",
+        "eligibility",
+        "static_features",
+        "telemetry_features",
+        "targets",
+        "missing",
+        "tags"
+      ],
+      "properties": {
+        "row_id": {"type": "string", "minLength": 1},
+        "source_kind": {"enum": ["evidence_record", "run_observation"]},
+        "source": {"$ref": "#/$defs/source"},
+        "campaign": {"type": "string", "minLength": 1},
+        "variant": {"type": "string", "minLength": 1},
+        "cohort": {"$ref": "#/$defs/cohort"},
+        "evidence": {"$ref": "#/$defs/evidence"},
+        "eligibility": {"$ref": "#/$defs/eligibility"},
+        "static_features": {"$ref": "#/$defs/featureMap"},
+        "telemetry_features": {"$ref": "#/$defs/featureMap"},
+        "targets": {"$ref": "#/$defs/featureMap"},
+        "missing": {"$ref": "#/$defs/missing"},
+        "tags": {"$ref": "#/$defs/stringArray"}
+      }
+    },
+    "catalog": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["static", "telemetry", "targets"],
+      "properties": {
+        "static": {"$ref": "#/$defs/stringArray"},
+        "telemetry": {"$ref": "#/$defs/stringArray"},
+        "targets": {"$ref": "#/$defs/stringArray"}
+      }
+    },
+    "countMap": {
+      "type": "object",
+      "additionalProperties": {"type": "integer", "minimum": 0}
+    },
+    "audit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "row_count",
+        "by_source_kind",
+        "by_evidence_grade",
+        "by_semantic_class",
+        "eligibility",
+        "missing_selector_requirements",
+        "feature_coverage"
+      ],
+      "properties": {
+        "row_count": {"type": "integer", "minimum": 0},
+        "by_source_kind": {"$ref": "#/$defs/countMap"},
+        "by_evidence_grade": {"$ref": "#/$defs/countMap"},
+        "by_semantic_class": {"$ref": "#/$defs/countMap"},
+        "eligibility": {"$ref": "#/$defs/countMap"},
+        "missing_selector_requirements": {"$ref": "#/$defs/countMap"},
+        "feature_coverage": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["static", "telemetry", "targets"],
+          "properties": {
+            "static": {"$ref": "#/$defs/countMap"},
+            "telemetry": {"$ref": "#/$defs/countMap"},
+            "targets": {"$ref": "#/$defs/countMap"}
+          }
+        }
+      }
+    }
+  }
+}

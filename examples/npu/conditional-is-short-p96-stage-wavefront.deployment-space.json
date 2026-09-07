@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0",
+  "space_id": "conditional-is-short-p96-stage-wavefront-v1",
+  "algorithm_id": "conditional_is_small_proposal",
+  "fixed_settings": {
+    "model_runner": "MRV1",
+    "base_max_num_seqs": 128,
+    "proposal_max_num_seqs": 768,
+    "base_max_num_batched_tokens": 32768,
+    "proposal_max_num_batched_tokens": 131072,
+    "base_memory_fraction": 0.54,
+    "proposal_memory_fraction": 0.36,
+    "base_batch_wait_seconds": 0.01,
+    "proposal_batch_wait_seconds": 0.01,
+    "base_score_priority": 1,
+    "base_graph_mode": "FULL_DECODE_ONLY",
+    "base_graph_capture_sizes": [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128],
+    "proposal_graph_mode": "FULL_DECODE_ONLY",
+    "proposal_graph_capture_sizes": [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512],
+    "proposal_graph_capture_ceiling": 512
+  },
+  "knobs": [
+    {
+      "name": "proposal.stage_wavefront_mode",
+      "setting_name": "proposal_stage_wavefront_mode",
+      "value_type": "string",
+      "domain": {"kind": "choices", "values": ["off", "auto"]},
+      "change_scope": "policy_boundary",
+      "semantic_effect": "preserves_algorithm",
+      "tuning_layer": "hot_policy",
+      "applies_to_stages": ["proposal_rollout_generate"],
+      "description": "Whether the adapter merges ready proposal groups into non-overlapping graph-eligible waves"
+    },
+    {
+      "name": "proposal.stage_wavefront_min_utilization",
+      "setting_name": "proposal_stage_wavefront_min_utilization",
+      "value_type": "number",
+      "domain": {"kind": "choices", "values": [0.65, 0.8]},
+      "change_scope": "policy_boundary",
+      "semantic_effect": "preserves_algorithm",
+      "tuning_layer": "hot_policy",
+      "applies_to_stages": ["proposal_rollout_generate"],
+      "description": "Planner utilization floor selecting the 384- or 480-sequence policy under the measured p96 contract"
+    },
+    {
+      "name": "proposal.stage_wavefront_max_wait_seconds",
+      "setting_name": "proposal_stage_wavefront_max_wait_seconds",
+      "value_type": "number",
+      "domain": {"kind": "choices", "values": [0.05, 0.5]},
+      "change_scope": "policy_boundary",
+      "semantic_effect": "preserves_algorithm",
+      "tuning_layer": "hot_policy",
+      "applies_to_stages": ["proposal_rollout_generate"],
+      "description": "Maximum collection delay before releasing a sparse or terminal wave"
+    }
+  ],
+  "constraints": [
+    {
+      "kind": "allowed_combinations",
+      "parameters": [
+        "proposal.stage_wavefront_mode",
+        "proposal.stage_wavefront_min_utilization",
+        "proposal.stage_wavefront_max_wait_seconds"
+      ],
+      "values": [
+        ["off", 0.65, 0.5],
+        ["auto", 0.65, 0.05],
+        ["auto", 0.65, 0.5],
+        ["auto", 0.8, 0.05],
+        ["auto", 0.8, 0.5]
+      ]
+    }
+  ]
+}

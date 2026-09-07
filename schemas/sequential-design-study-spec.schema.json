@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://inference-autopilot.local/schemas/sequential-design-study-spec.schema.json",
+  "title": "Sequential Design Study Specification",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "study_id",
+    "methods",
+    "pair_looks",
+    "true_log_effects",
+    "noise_models",
+    "simulation_trials",
+    "simulation_seed"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "study_id": {"type": "string", "minLength": 1},
+    "methods": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "frozen_spec_method",
+          "finite_horizon_hoeffding",
+          "hedged_capital_predictable_plugin"
+        ]
+      }
+    },
+    "pair_looks": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "integer", "minimum": 2, "multipleOf": 2}
+    },
+    "true_log_effects": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "number"}
+    },
+    "noise_models": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"enum": ["observed_symmetric_residual", "bounded_endpoints"]}
+    },
+    "simulation_trials": {"type": "integer", "minimum": 1, "maximum": 100000},
+    "simulation_seed": {"type": "integer", "minimum": 0}
+  }
+}

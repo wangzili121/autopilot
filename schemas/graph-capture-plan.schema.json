@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:graph-capture-plan:1.0",
+  "title": "Inference Autopilot Graph Capture Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "producer",
+    "profile_id",
+    "source_spec_sha256",
+    "selected_capture_sizes",
+    "assignments",
+    "metrics",
+    "capture_plan_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "producer": {"type": "string", "minLength": 1},
+    "profile_id": {"$ref": "#/$defs/id"},
+    "source_spec_sha256": {"$ref": "#/$defs/digest"},
+    "selected_capture_sizes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "integer", "minimum": 1}
+    },
+    "assignments": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/assignment"}
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": {"type": "number"}
+    },
+    "capture_plan_sha256": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "assignment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stage_id",
+        "shape_size",
+        "count",
+        "execution",
+        "capture_size",
+        "latency_ms"
+      ],
+      "properties": {
+        "stage_id": {"$ref": "#/$defs/id"},
+        "shape_size": {"type": "integer", "minimum": 1},
+        "count": {"type": "integer", "minimum": 1},
+        "execution": {"enum": ["captured", "eager"]},
+        "capture_size": {"type": ["integer", "null"], "minimum": 1},
+        "latency_ms": {"type": "number", "minimum": 0}
+      }
+    }
+  }
+}

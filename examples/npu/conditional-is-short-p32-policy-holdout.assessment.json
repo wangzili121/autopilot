@@ -1,0 +1,9 @@
+{
+  "schema_version": "1.0",
+  "assessment_id": "cis-small-proposal-short-p32-policy-holdout-npu2-20260905-r1",
+  "policy_bundle_sha256": "498d7be17696414567e87f7040a63389162d6873377ce794e5372980dd3b1fd1",
+  "minimum_successful_replicates": 2,
+  "maximum_regret_fraction": 0.03,
+  "minimum_improvement_over_fallback_fraction": 0.03,
+  "reject_observed_failures": true
+}

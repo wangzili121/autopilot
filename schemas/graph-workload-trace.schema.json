@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:graph-workload-trace:1.0",
+  "title": "Inference Autopilot Graph Workload Trace",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "trace_id",
+    "algorithm_id",
+    "source_result_sha256",
+    "events",
+    "metadata",
+    "graph_workload_trace_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "trace_id": {"$ref": "#/$defs/id"},
+    "algorithm_id": {"$ref": "#/$defs/id"},
+    "source_result_sha256": {"$ref": "#/$defs/sha256"},
+    "events": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/event"}
+    },
+    "metadata": {"type": "object"},
+    "graph_workload_trace_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "engine_role",
+        "stage_id",
+        "call_kind",
+        "shape_size",
+        "started_at_seconds",
+        "duration_ms"
+      ],
+      "properties": {
+        "engine_role": {"enum": ["base", "proposal"]},
+        "stage_id": {"$ref": "#/$defs/id"},
+        "call_kind": {"enum": ["sample", "score"]},
+        "shape_size": {"type": "integer", "minimum": 1},
+        "started_at_seconds": {"type": "number"},
+        "duration_ms": {"type": "number", "minimum": 0}
+      }
+    }
+  }
+}

@@ -1,0 +1,202 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:runtime-policy-pool:1.0",
+  "title": "Inference Autopilot Validated Runtime Policy Pool",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "producer",
+    "pool_id",
+    "semantic_contract",
+    "source",
+    "fallback_endpoint",
+    "policy_endpoints",
+    "routing_policy",
+    "overlap_audit",
+    "runtime_policy_pool_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "producer": {"type": "string", "minLength": 1},
+    "pool_id": {"$ref": "runtime-policy-pool-spec.schema.json#/$defs/id"},
+    "semantic_contract": {
+      "$ref": "runtime-policy-pool-spec.schema.json#/$defs/semanticContract"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pool_spec_sha256", "validated_bindings"],
+      "properties": {
+        "pool_spec_sha256": {
+          "$ref": "runtime-policy-pool-spec.schema.json#/$defs/digest"
+        },
+        "validated_bindings": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "endpoint_id",
+              "policy_bundle_sha256",
+              "policy_holdout_assessment_sha256"
+            ],
+            "properties": {
+              "endpoint_id": {
+                "$ref": "runtime-policy-pool-spec.schema.json#/$defs/id"
+              },
+              "policy_bundle_sha256": {
+                "$ref": "runtime-policy-pool-spec.schema.json#/$defs/digest"
+              },
+              "policy_holdout_assessment_sha256": {
+                "$ref": "runtime-policy-pool-spec.schema.json#/$defs/digest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "fallback_endpoint": {"$ref": "#/$defs/fallbackEndpoint"},
+    "policy_endpoints": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/policyEndpoint"}
+    },
+    "routing_policy": {
+      "$ref": "runtime-policy-pool-spec.schema.json#/$defs/routingPolicy"
+    },
+    "overlap_audit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "checked_pair_count",
+        "overlapping_pair_count",
+        "overlapping_pairs"
+      ],
+      "properties": {
+        "checked_pair_count": {"type": "integer", "minimum": 0},
+        "overlapping_pair_count": {"type": "integer", "minimum": 0},
+        "overlapping_pairs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "left_endpoint_id",
+              "right_endpoint_id",
+              "resolution",
+              "winner_endpoint_id"
+            ],
+            "properties": {
+              "left_endpoint_id": {
+                "$ref": "runtime-policy-pool-spec.schema.json#/$defs/id"
+              },
+              "right_endpoint_id": {
+                "$ref": "runtime-policy-pool-spec.schema.json#/$defs/id"
+              },
+              "resolution": {"const": "higher_priority"},
+              "winner_endpoint_id": {
+                "$ref": "runtime-policy-pool-spec.schema.json#/$defs/id"
+              }
+            }
+          }
+        }
+      }
+    },
+    "runtime_policy_pool_sha256": {
+      "$ref": "runtime-policy-pool-spec.schema.json#/$defs/digest"
+    }
+  },
+  "$defs": {
+    "fallbackEndpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "endpoint_id",
+        "deployment_settings",
+        "configuration_sha256",
+        "requires_engine_restart"
+      ],
+      "properties": {
+        "endpoint_id": {
+          "$ref": "runtime-policy-pool-spec.schema.json#/$defs/id"
+        },
+        "deployment_settings": {
+          "$ref": "runtime-policy-pool-spec.schema.json#/$defs/settingMap"
+        },
+        "configuration_sha256": {
+          "$ref": "runtime-policy-pool-spec.schema.json#/$defs/digest"
+        },
+        "requires_engine_restart": {"type": "boolean"}
+      }
+    },
+    "policyEndpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "endpoint_id",
+        "priority",
+        "policy_id",
+        "policy_bundle_sha256",
+        "policy_holdout_assessment_sha256",
+        "selected_candidate_id",
+        "deployment_settings",
+        "configuration_sha256",
+        "requires_engine_restart",
+        "activation_guard",
+        "validation"
+      ],
+      "properties": {
+        "endpoint_id": {
+          "$ref": "runtime-policy-pool-spec.schema.json#/$defs/id"
+        },
+        "priority": {"type": "integer", "minimum": 0},
+        "policy_id": {
+          "$ref": "runtime-policy-pool-spec.schema.json#/$defs/id"
+        },
+        "policy_bundle_sha256": {
+          "$ref": "runtime-policy-pool-spec.schema.json#/$defs/digest"
+        },
+        "policy_holdout_assessment_sha256": {
+          "$ref": "runtime-policy-pool-spec.schema.json#/$defs/digest"
+        },
+        "selected_candidate_id": {
+          "$ref": "runtime-policy-pool-spec.schema.json#/$defs/id"
+        },
+        "deployment_settings": {
+          "$ref": "runtime-policy-pool-spec.schema.json#/$defs/settingMap"
+        },
+        "configuration_sha256": {
+          "$ref": "runtime-policy-pool-spec.schema.json#/$defs/digest"
+        },
+        "requires_engine_restart": {"type": "boolean"},
+        "activation_guard": {"type": "object"},
+        "validation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "assessment_id",
+            "improvement_over_fallback_fraction",
+            "regret_to_measured_oracle_fraction",
+            "successful_selected_replicates"
+          ],
+          "properties": {
+            "assessment_id": {
+              "$ref": "runtime-policy-pool-spec.schema.json#/$defs/id"
+            },
+            "improvement_over_fallback_fraction": {"type": "number"},
+            "regret_to_measured_oracle_fraction": {
+              "type": "number",
+              "minimum": 0
+            },
+            "successful_selected_replicates": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "assessment_id": "cis-small-proposal-medium2k-p32-propbt16k-npu2-20260906-r1",
+  "policy_experiment_plan_sha256": "09b0845a154c831cb069e6e2e60714c9ce763861f446879fccc5b792412599b9",
+  "calibration_plan_sha256": "ff40d127ddc3d41c85935ffb1c8784ce85399bcd564cdaa1e424f854000e4091",
+  "candidate_configuration_id": "conditional-is-medium2k-p32-mechanism-v1--9cd2964050c6eb47",
+  "minimum_complete_pairs": 2,
+  "minimum_median_improvement_fraction": 0.03,
+  "require_effect_outside_replay_noise": true,
+  "require_quality_constraints": true
+}

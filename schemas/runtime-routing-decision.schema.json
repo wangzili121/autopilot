@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:runtime-routing-decision:1.0",
+  "title": "Inference Autopilot Runtime Routing Decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "producer",
+    "decision_id",
+    "status",
+    "runtime_policy_pool_sha256",
+    "routing_request_sha256",
+    "selected_endpoint_id",
+    "selected_policy_bundle_sha256",
+    "selected_configuration_sha256",
+    "fallback_used",
+    "reasons",
+    "endpoint_evaluations",
+    "runtime_policy_decision_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "producer": {"type": "string", "minLength": 1},
+    "decision_id": {
+      "$ref": "runtime-policy-pool-spec.schema.json#/$defs/id"
+    },
+    "status": {"enum": ["selected", "fallback", "unavailable"]},
+    "runtime_policy_pool_sha256": {
+      "$ref": "runtime-policy-pool-spec.schema.json#/$defs/digest"
+    },
+    "routing_request_sha256": {
+      "$ref": "runtime-policy-pool-spec.schema.json#/$defs/digest"
+    },
+    "selected_endpoint_id": {
+      "type": ["string", "null"],
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "selected_policy_bundle_sha256": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "selected_configuration_sha256": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "fallback_used": {"type": "boolean"},
+    "reasons": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "endpoint_evaluations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["endpoint_id", "priority", "eligible", "reasons"],
+        "properties": {
+          "endpoint_id": {
+            "$ref": "runtime-policy-pool-spec.schema.json#/$defs/id"
+          },
+          "priority": {"type": "integer", "minimum": 0},
+          "eligible": {"type": "boolean"},
+          "reasons": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {"type": "string", "minLength": 1}
+          }
+        }
+      }
+    },
+    "runtime_policy_decision_sha256": {
+      "$ref": "runtime-policy-pool-spec.schema.json#/$defs/digest"
+    }
+  }
+}

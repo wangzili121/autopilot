@@ -1,0 +1,119 @@
+{
+  "schema_version": "1.0",
+  "space_id": "conditional-is-medium2k-p32-mechanism-v1",
+  "algorithm_id": "conditional_is_small_proposal",
+  "fixed_settings": {
+    "model_runner": "MRV1",
+    "base_memory_fraction": 0.54,
+    "proposal_memory_fraction": 0.36,
+    "base_batch_wait_seconds": 0.0,
+    "proposal_batch_wait_seconds": 0.02,
+    "base_score_priority": 1,
+    "base_graph_mode": "FULL_DECODE_ONLY",
+    "proposal_graph_mode": "FULL_DECODE_ONLY"
+  },
+  "knobs": [
+    {
+      "name": "base.max_num_seqs",
+      "setting_name": "base_max_num_seqs",
+      "value_type": "integer",
+      "domain": {"kind": "choices", "values": [40, 48, 64]},
+      "change_scope": "engine_restart",
+      "semantic_effect": "preserves_algorithm",
+      "tuning_layer": "static_deployment",
+      "applies_to_stages": ["candidate_generate", "target_score"],
+      "description": "Base scheduler capacity around the observed score batch demand"
+    },
+    {
+      "name": "base.max_num_batched_tokens",
+      "setting_name": "base_max_num_batched_tokens",
+      "value_type": "integer",
+      "domain": {"kind": "choices", "values": [10240, 12288, 14336, 16384]},
+      "change_scope": "engine_restart",
+      "semantic_effect": "preserves_algorithm",
+      "tuning_layer": "static_deployment",
+      "applies_to_stages": ["candidate_generate", "target_score"],
+      "description": "Base prefill and target-scoring token budget in 2048-token steps"
+    },
+    {
+      "name": "proposal.max_num_seqs",
+      "setting_name": "proposal_max_num_seqs",
+      "value_type": "integer",
+      "domain": {"kind": "choices", "values": [48, 64]},
+      "change_scope": "engine_restart",
+      "semantic_effect": "preserves_algorithm",
+      "tuning_layer": "static_deployment",
+      "applies_to_stages": ["proposal_rollout_generate"],
+      "description": "Proposal scheduler capacity, retaining the measured 48/64 boundary"
+    },
+    {
+      "name": "proposal.max_num_batched_tokens",
+      "setting_name": "proposal_max_num_batched_tokens",
+      "value_type": "integer",
+      "domain": {"kind": "choices", "values": [12288, 16384, 24576]},
+      "change_scope": "engine_restart",
+      "semantic_effect": "preserves_algorithm",
+      "tuning_layer": "static_deployment",
+      "applies_to_stages": ["proposal_rollout_generate"],
+      "description": "Proposal prefill and rollout token batching budget"
+    },
+    {
+      "name": "base.capture_sizes",
+      "setting_name": "base_graph_capture_sizes",
+      "value_type": "integer_sequence",
+      "domain": {
+        "kind": "choices",
+        "values": [
+          [1, 2, 4, 8, 16, 24, 32, 40],
+          [1, 2, 4, 8, 16, 24, 32, 40, 48],
+          [1, 2, 4, 8, 16, 24, 32, 40, 48, 64]
+        ]
+      },
+      "change_scope": "engine_restart",
+      "semantic_effect": "preserves_algorithm",
+      "tuning_layer": "graph_capture",
+      "applies_to_stages": ["candidate_generate", "target_score"],
+      "description": "Base ACL Graph buckets coupled to scheduler capacity"
+    },
+    {
+      "name": "proposal.capture_sizes",
+      "setting_name": "proposal_graph_capture_sizes",
+      "value_type": "integer_sequence",
+      "domain": {
+        "kind": "choices",
+        "values": [
+          [1, 2, 4, 8, 16, 24, 32, 40, 48],
+          [1, 2, 4, 8, 16, 24, 32, 40, 48, 64]
+        ]
+      },
+      "change_scope": "engine_restart",
+      "semantic_effect": "preserves_algorithm",
+      "tuning_layer": "graph_capture",
+      "applies_to_stages": ["proposal_rollout_generate"],
+      "description": "Proposal ACL Graph buckets coupled to scheduler capacity"
+    }
+  ],
+  "constraints": [
+    {
+      "kind": "allowed_combinations",
+      "parameters": ["base.max_num_seqs", "base.capture_sizes"],
+      "values": [
+        [40, [1, 2, 4, 8, 16, 24, 32, 40]],
+        [40, [1, 2, 4, 8, 16, 24, 32, 40, 48]],
+        [40, [1, 2, 4, 8, 16, 24, 32, 40, 48, 64]],
+        [48, [1, 2, 4, 8, 16, 24, 32, 40, 48]],
+        [48, [1, 2, 4, 8, 16, 24, 32, 40, 48, 64]],
+        [64, [1, 2, 4, 8, 16, 24, 32, 40, 48, 64]]
+      ]
+    },
+    {
+      "kind": "allowed_combinations",
+      "parameters": ["proposal.max_num_seqs", "proposal.capture_sizes"],
+      "values": [
+        [48, [1, 2, 4, 8, 16, 24, 32, 40, 48]],
+        [48, [1, 2, 4, 8, 16, 24, 32, 40, 48, 64]],
+        [64, [1, 2, 4, 8, 16, 24, 32, 40, 48, 64]]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.0",
+  "space_id": "conditional-is-short-p16-capacity-v1",
+  "algorithm_id": "conditional_is_small_proposal",
+  "fixed_settings": {
+    "model_runner": "MRV1",
+    "base_max_num_batched_tokens": 10240,
+    "proposal_max_num_batched_tokens": 12288,
+    "base_memory_fraction": 0.54,
+    "proposal_memory_fraction": 0.36,
+    "base_batch_wait_seconds": 0.0,
+    "proposal_batch_wait_seconds": 0.02,
+    "base_score_priority": 1
+  },
+  "knobs": [
+    {
+      "name": "base.max_num_seqs",
+      "setting_name": "base_max_num_seqs",
+      "value_type": "integer",
+      "domain": {"kind": "choices", "values": [40, 64, 96, 128]},
+      "change_scope": "engine_restart",
+      "semantic_effect": "preserves_algorithm",
+      "tuning_layer": "static_deployment",
+      "applies_to_stages": ["candidate_generate", "target_score"],
+      "description": "Base concurrency between the manual policy and measured in-flight pressure"
+    },
+    {
+      "name": "proposal.max_num_seqs",
+      "setting_name": "proposal_max_num_seqs",
+      "value_type": "integer",
+      "domain": {"kind": "choices", "values": [48, 96, 192, 384]},
+      "change_scope": "engine_restart",
+      "semantic_effect": "preserves_algorithm",
+      "tuning_layer": "static_deployment",
+      "applies_to_stages": ["proposal_rollout_generate"],
+      "description": "Proposal concurrency between the manual policy and measured in-flight pressure"
+    }
+  ],
+  "constraints": [
+    {
+      "kind": "allowed_combinations",
+      "parameters": ["base.max_num_seqs", "proposal.max_num_seqs"],
+      "values": [
+        [40, 48],
+        [40, 96],
+        [64, 96],
+        [64, 192],
+        [96, 192],
+        [96, 384],
+        [128, 192],
+        [128, 384]
+      ]
+    }
+  ]
+}

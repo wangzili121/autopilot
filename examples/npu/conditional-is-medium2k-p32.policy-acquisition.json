@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "acquisition_id": "conditional-is-medium2k-p32-active-round-1",
+  "policy_bundle_sha256": "ff42fb32beb3754f61e26a6b558522f9a9661818e971e26cc2724cdd4675d870",
+  "candidate_budget": 1,
+  "require_policy_eligible": false,
+  "exclude_exactly_observed": true,
+  "maximum_changed_knobs": 1,
+  "maximum_normalized_distance": 0.25,
+  "minimum_normalized_optimistic_improvement": 0.0,
+  "weights": {
+    "optimistic_improvement": 1.0,
+    "uncertainty_width": 0.25,
+    "normalized_distance": 1.0,
+    "changed_knobs": 0.1
+  }
+}

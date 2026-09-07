@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:runtime-closure-assessment:1.0",
+  "title": "Inference Autopilot Runtime Closure Assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "producer",
+    "plan_sha256",
+    "campaign_id",
+    "expected_run_count",
+    "valid_run_count",
+    "complete",
+    "issues",
+    "runs",
+    "summary",
+    "runtime_closure_assessment_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "producer": {"type": "string", "minLength": 1},
+    "plan_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "campaign_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "expected_run_count": {"type": "integer", "minimum": 1},
+    "valid_run_count": {"type": "integer", "minimum": 0},
+    "complete": {"type": "boolean"},
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["run_id", "message"],
+        "properties": {
+          "run_id": {"type": "string", "minLength": 1},
+          "message": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "runs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "run_id",
+          "sequence_index",
+          "configuration_id",
+          "workload_seed",
+          "run_manifest_sha256",
+          "effective_config_sha256",
+          "runner_log_sha256",
+          "engines"
+        ],
+        "properties": {
+          "run_id": {"type": "string", "minLength": 1},
+          "sequence_index": {"type": "integer", "minimum": 0},
+          "configuration_id": {"type": "string", "minLength": 1},
+          "workload_seed": {"type": "integer", "minimum": 0},
+          "run_manifest_sha256": {"$ref": "#/$defs/digest"},
+          "effective_config_sha256": {"$ref": "#/$defs/digest"},
+          "runner_log_sha256": {"$ref": "#/$defs/digest"},
+          "engines": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "prefixItems": [
+              {"$ref": "#/$defs/baseEngine"},
+              {"$ref": "#/$defs/proposalEngine"}
+            ],
+            "items": false
+          }
+        }
+      }
+    },
+    "summary": {"type": "object"},
+    "runtime_closure_assessment_sha256": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "positiveIntegers": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "integer", "minimum": 1}
+    },
+    "engine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "model_id",
+        "requested_max_num_seqs",
+        "effective_admission_max_num_seqs",
+        "admission_capacity_source",
+        "requested_max_num_batched_tokens",
+        "requested_graph_mode",
+        "requested_graph_capture_sizes",
+        "resolved_dtype",
+        "resolved_max_seq_len",
+        "resolved_prefix_caching",
+        "resolved_chunked_prefill",
+        "resolved_compilation_mode",
+        "resolved_compilation_backend",
+        "resolved_compile_ranges_endpoints",
+        "resolved_graph_mode",
+        "resolved_graph_capture_sizes",
+        "resolved_max_graph_capture_size",
+        "graph_policy_source",
+        "graph_policy_matches_requested",
+        "compile_range_matches_requested",
+        "graph_capacity_coverage_ratio",
+        "uncovered_graph_capacity",
+        "available_kv_cache_gib",
+        "kv_cache_tokens",
+        "max_model_concurrency",
+        "graph_capture_seconds",
+        "graph_capture_gib"
+      ],
+      "properties": {
+        "role": {"enum": ["base", "proposal"]},
+        "model_id": {"type": "string", "minLength": 1},
+        "requested_max_num_seqs": {"type": "integer", "minimum": 1},
+        "effective_admission_max_num_seqs": {"type": "integer", "minimum": 1},
+        "admission_capacity_source": {
+          "enum": ["engine_scheduler", "stage_wavefront_plan"]
+        },
+        "requested_max_num_batched_tokens": {"type": "integer", "minimum": 1},
+        "requested_graph_mode": {"type": ["string", "null"], "minLength": 1},
+        "requested_graph_capture_sizes": {
+          "anyOf": [
+            {"$ref": "#/$defs/positiveIntegers"},
+            {"type": "null"}
+          ]
+        },
+        "resolved_dtype": {"type": "string", "minLength": 1},
+        "resolved_max_seq_len": {"type": "integer", "minimum": 1},
+        "resolved_prefix_caching": {"type": "boolean"},
+        "resolved_chunked_prefill": {"type": "boolean"},
+        "resolved_compilation_mode": {"type": "string", "minLength": 1},
+        "resolved_compilation_backend": {"type": "string", "minLength": 1},
+        "resolved_compile_ranges_endpoints": {"$ref": "#/$defs/positiveIntegers"},
+        "resolved_graph_mode": {"type": "string", "minLength": 1},
+        "resolved_graph_capture_sizes": {"$ref": "#/$defs/positiveIntegers"},
+        "resolved_max_graph_capture_size": {"type": "integer", "minimum": 1},
+        "graph_policy_source": {"enum": ["explicit", "runtime_resolved"]},
+        "graph_policy_matches_requested": {"type": ["boolean", "null"]},
+        "compile_range_matches_requested": {"type": "boolean"},
+        "graph_capacity_coverage_ratio": {"type": "number", "minimum": 0},
+        "uncovered_graph_capacity": {"type": "integer", "minimum": 0},
+        "available_kv_cache_gib": {"type": "number", "minimum": 0},
+        "kv_cache_tokens": {"type": "integer", "minimum": 1},
+        "max_model_concurrency": {"type": "number", "minimum": 0},
+        "graph_capture_seconds": {"type": "number", "minimum": 0},
+        "graph_capture_gib": {"type": "number", "minimum": 0}
+      }
+    },
+    "baseEngine": {
+      "allOf": [
+        {"$ref": "#/$defs/engine"},
+        {"properties": {"role": {"const": "base"}}}
+      ]
+    },
+    "proposalEngine": {
+      "allOf": [
+        {"$ref": "#/$defs/engine"},
+        {"properties": {"role": {"const": "proposal"}}}
+      ]
+    }
+  }
+}

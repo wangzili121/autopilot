@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:policy-holdout-assessment:1.0",
+  "title": "Inference Autopilot Policy Holdout Assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "producer",
+    "assessment_id",
+    "status",
+    "holdout_spec_sha256",
+    "policy_bundle_sha256",
+    "compiled_space_sha256",
+    "holdout_feature_table_sha256",
+    "requirements",
+    "evaluated_candidates",
+    "selected",
+    "fallback",
+    "measured_oracle",
+    "comparison",
+    "reasons",
+    "audit",
+    "policy_holdout_assessment_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "producer": {"type": "string", "minLength": 1},
+    "assessment_id": {"$ref": "#/$defs/id"},
+    "status": {"enum": ["validated", "rejected", "insufficient_holdout"]},
+    "holdout_spec_sha256": {"$ref": "#/$defs/digest"},
+    "policy_bundle_sha256": {"$ref": "#/$defs/digest"},
+    "compiled_space_sha256": {"$ref": "#/$defs/digest"},
+    "holdout_feature_table_sha256": {"$ref": "#/$defs/digest"},
+    "requirements": {"type": "object"},
+    "evaluated_candidates": {
+      "type": "array",
+      "items": {"type": "object"}
+    },
+    "selected": {"type": ["object", "null"]},
+    "fallback": {"type": ["object", "null"]},
+    "measured_oracle": {"type": ["object", "null"]},
+    "comparison": {"type": ["object", "null"]},
+    "reasons": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "audit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "holdout_row_count",
+        "context_matched_row_count",
+        "context_unmatched_row_count",
+        "ambiguous_or_unmatched_candidate_row_count",
+        "evaluated_candidate_count",
+        "eligible_candidate_count",
+        "by_evidence_grade"
+      ],
+      "properties": {
+        "holdout_row_count": {"type": "integer", "minimum": 0},
+        "context_matched_row_count": {"type": "integer", "minimum": 0},
+        "context_unmatched_row_count": {"type": "integer", "minimum": 0},
+        "ambiguous_or_unmatched_candidate_row_count": {"type": "integer", "minimum": 0},
+        "evaluated_candidate_count": {"type": "integer", "minimum": 0},
+        "eligible_candidate_count": {"type": "integer", "minimum": 0},
+        "by_evidence_grade": {
+          "type": "object",
+          "additionalProperties": {"type": "integer", "minimum": 0}
+        }
+      }
+    },
+    "policy_holdout_assessment_sha256": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

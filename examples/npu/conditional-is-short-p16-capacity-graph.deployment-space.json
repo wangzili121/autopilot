@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0",
+  "space_id": "conditional-is-short-p16-capacity-graph-v1",
+  "algorithm_id": "conditional_is_small_proposal",
+  "fixed_settings": {
+    "model_runner": "MRV1",
+    "base_max_num_batched_tokens": 10240,
+    "proposal_max_num_batched_tokens": 12288,
+    "base_memory_fraction": 0.54,
+    "proposal_memory_fraction": 0.36,
+    "base_batch_wait_seconds": 0.0,
+    "proposal_batch_wait_seconds": 0.02,
+    "base_score_priority": 1,
+    "base_graph_mode": "FULL_DECODE_ONLY",
+    "base_graph_capture_sizes": [1, 2, 4, 8, 16, 24, 32, 40],
+    "proposal_graph_mode": "FULL_DECODE_ONLY"
+  },
+  "knobs": [
+    {
+      "name": "base.max_num_seqs",
+      "setting_name": "base_max_num_seqs",
+      "value_type": "integer",
+      "domain": {"kind": "choices", "values": [40]},
+      "change_scope": "engine_restart",
+      "semantic_effect": "preserves_algorithm",
+      "tuning_layer": "static_deployment",
+      "applies_to_stages": ["candidate_generate", "target_score"],
+      "description": "Frozen base concurrency for the measured short-context regime"
+    },
+    {
+      "name": "proposal.max_num_seqs",
+      "setting_name": "proposal_max_num_seqs",
+      "value_type": "integer",
+      "domain": {"kind": "choices", "values": [48, 64]},
+      "change_scope": "engine_restart",
+      "semantic_effect": "preserves_algorithm",
+      "tuning_layer": "static_deployment",
+      "applies_to_stages": ["proposal_rollout_generate"],
+      "description": "Proposal scheduler capacity around the measured graph-domain cliff"
+    },
+    {
+      "name": "proposal.capture_sizes",
+      "setting_name": "proposal_graph_capture_sizes",
+      "value_type": "integer_sequence",
+      "domain": {
+        "kind": "choices",
+        "values": [
+          [1, 2, 4, 8, 16, 24, 32, 40, 48],
+          [1, 2, 4, 8, 16, 24, 32, 40, 48, 64]
+        ]
+      },
+      "change_scope": "engine_restart",
+      "semantic_effect": "preserves_algorithm",
+      "tuning_layer": "graph_capture",
+      "applies_to_stages": ["proposal_rollout_generate"],
+      "description": "Runner-ready proposal ACL Graph bucket policy"
+    }
+  ],
+  "constraints": []
+}

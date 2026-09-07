@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "assessment_id": "conditional-is-short-p96-basebt49152-round1-result",
+  "mechanism_probe_plan_sha256": "b21867f3a061e53b2e0a8ceac203152ddf27591c0190ecce6b39cbdd682f769d",
+  "calibration_plan_sha256": "8685ab0db2f67384309dcf759ed9f880383a6da7fe97c14910ea7725e075f3c6",
+  "candidate_configuration_id": "conditional-is-short-p96-token-factorization-v1--2bab023aaa584f43",
+  "minimum_complete_pairs": 2,
+  "minimum_median_improvement_fraction": 0.03,
+  "require_effect_outside_replay_noise": true,
+  "require_quality_constraints": true
+}

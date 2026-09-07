@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:policy-transfer-assessment-spec:1.0",
+  "title": "Inference Autopilot Policy Transfer Assessment Spec",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "assessment_id",
+    "policy_transfer_plan_sha256",
+    "minimum_complete_pairs",
+    "minimum_median_improvement_fraction",
+    "require_effect_outside_replay_noise",
+    "require_quality_constraints"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "assessment_id": {"$ref": "#/$defs/id"},
+    "policy_transfer_plan_sha256": {"$ref": "#/$defs/digest"},
+    "minimum_complete_pairs": {"type": "integer", "minimum": 1},
+    "minimum_median_improvement_fraction": {"type": "number"},
+    "require_effect_outside_replay_noise": {"type": "boolean"},
+    "require_quality_constraints": {"type": "boolean"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

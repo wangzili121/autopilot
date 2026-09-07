@@ -1,0 +1,9 @@
+{
+  "schema_version": "1.0",
+  "assessment_id": "cis-small-proposal-medium2k-p32-policy-transfer-npu2-20260905-r1",
+  "policy_transfer_plan_sha256": "e9257946cbd4f56a3843ca5144f458c599a95c16d438874ad1dcfaba8a2ea9ad",
+  "minimum_complete_pairs": 2,
+  "minimum_median_improvement_fraction": 0.03,
+  "require_effect_outside_replay_noise": true,
+  "require_quality_constraints": true
+}

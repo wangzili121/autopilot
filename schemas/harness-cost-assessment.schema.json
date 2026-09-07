@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:harness-cost-assessment:1.0",
+  "title": "Inference Autopilot Harness Cost Assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "producer",
+    "plan_sha256",
+    "campaign_id",
+    "expected_run_count",
+    "valid_run_count",
+    "complete",
+    "issues",
+    "runs",
+    "cache_reuse_groups",
+    "summary",
+    "harness_cost_assessment_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "producer": {"type": "string", "minLength": 1},
+    "plan_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "campaign_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "expected_run_count": {"type": "integer", "minimum": 1},
+    "valid_run_count": {"type": "integer", "minimum": 0},
+    "complete": {"type": "boolean"},
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["run_id", "message"],
+        "properties": {
+          "run_id": {"type": "string", "minLength": 1},
+          "message": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "runs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "run_id",
+          "sequence_index",
+          "configuration_id",
+          "workload_seed",
+          "run_manifest_sha256",
+          "effective_config_sha256",
+          "runner_log_sha256",
+          "startup_seconds",
+          "engines"
+        ],
+        "properties": {
+          "run_id": {"type": "string", "minLength": 1},
+          "sequence_index": {"type": "integer", "minimum": 0},
+          "configuration_id": {"type": "string", "minLength": 1},
+          "workload_seed": {"type": "integer", "minimum": 0},
+          "run_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "effective_config_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "runner_log_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "startup_seconds": {"type": "number", "minimum": 0},
+          "engines": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {"$ref": "#/$defs/engineStartup"}
+          }
+        }
+      }
+    },
+    "cache_reuse_groups": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/cacheReuseGroup"}
+    },
+    "summary": {"type": "object"},
+    "harness_cost_assessment_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "$defs": {
+    "optionalSeconds": {"type": ["number", "null"], "minimum": 0},
+    "engineStartup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "engine_fingerprint_sha256",
+        "model_id",
+        "cache_key",
+        "weight_load_seconds",
+        "dynamo_seconds",
+        "graph_compile_seconds",
+        "compile_warmup_seconds",
+        "graph_capture_seconds",
+        "graph_capture_gib",
+        "engine_init_seconds",
+        "compiler_invoked",
+        "graph_capture_invoked"
+      ],
+      "properties": {
+        "role": {"enum": ["base", "proposal"]},
+        "engine_fingerprint_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "model_id": {"type": "string", "minLength": 1},
+        "cache_key": {"type": ["string", "null"], "pattern": "^[0-9a-f]+$"},
+        "weight_load_seconds": {"$ref": "#/$defs/optionalSeconds"},
+        "dynamo_seconds": {"$ref": "#/$defs/optionalSeconds"},
+        "graph_compile_seconds": {"type": "number", "minimum": 0},
+        "compile_warmup_seconds": {"$ref": "#/$defs/optionalSeconds"},
+        "graph_capture_seconds": {"$ref": "#/$defs/optionalSeconds"},
+        "graph_capture_gib": {"$ref": "#/$defs/optionalSeconds"},
+        "engine_init_seconds": {"type": "number", "exclusiveMinimum": 0},
+        "compiler_invoked": {"type": "boolean"},
+        "graph_capture_invoked": {"type": "boolean"}
+      }
+    },
+    "cacheReuseGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "engine_fingerprint_sha256",
+        "run_ids",
+        "cache_keys",
+        "first_engine_init_seconds",
+        "later_median_engine_init_seconds",
+        "engine_init_reduction_fraction",
+        "first_compile_warmup_seconds",
+        "later_median_compile_warmup_seconds",
+        "compile_warmup_reduction_fraction",
+        "repeated_compiler_invocations",
+        "repeated_graph_captures",
+        "classification"
+      ],
+      "properties": {
+        "role": {"enum": ["base", "proposal"]},
+        "engine_fingerprint_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "run_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+        "cache_keys": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[0-9a-f]+$"}},
+        "first_engine_init_seconds": {"type": "number", "minimum": 0},
+        "later_median_engine_init_seconds": {"$ref": "#/$defs/optionalSeconds"},
+        "engine_init_reduction_fraction": {"type": ["number", "null"]},
+        "first_compile_warmup_seconds": {"$ref": "#/$defs/optionalSeconds"},
+        "later_median_compile_warmup_seconds": {"$ref": "#/$defs/optionalSeconds"},
+        "compile_warmup_reduction_fraction": {"type": ["number", "null"]},
+        "repeated_compiler_invocations": {"type": "integer", "minimum": 0},
+        "repeated_graph_captures": {"type": "integer", "minimum": 0},
+        "classification": {
+          "enum": [
+            "single_observation",
+            "cache_key_missing_or_changed",
+            "cache_key_reused_compile_reduced",
+            "cache_key_reused_compile_repeated",
+            "cache_key_reused_without_compile"
+          ]
+        }
+      }
+    }
+  }
+}

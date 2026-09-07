@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:run-manifest:1.0",
+  "title": "Inference Autopilot Run Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "plan_sha256",
+    "spec_sha256",
+    "run",
+    "semantic_contract",
+    "workload_contract",
+    "environment_contract",
+    "objective",
+    "required_metrics",
+    "configuration",
+    "run_manifest_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "plan_sha256": {"$ref": "#/$defs/digest"},
+    "spec_sha256": {"$ref": "#/$defs/digest"},
+    "run": {"type": "object"},
+    "semantic_contract": {"type": "object"},
+    "workload_contract": {"type": "object"},
+    "environment_contract": {"type": "object"},
+    "objective": {"type": "object"},
+    "required_metrics": {"type": "array", "items": {"type": "string"}},
+    "configuration": {"type": "object"},
+    "run_manifest_sha256": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

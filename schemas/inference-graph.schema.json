@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:inference-graph:1.0",
+  "title": "Inference Autopilot Graph IR",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "algorithm_id",
+    "algorithm_semantics",
+    "parameters",
+    "stages",
+    "loop",
+    "source_contract",
+    "metadata"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "algorithm_id": {"type": "string", "minLength": 1},
+    "algorithm_semantics": {"enum": ["exact", "biased_ablation"]},
+    "parameters": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/parameter"}
+    },
+    "stages": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/stage"}
+    },
+    "loop": {"$ref": "#/$defs/loop"},
+    "source_contract": {"type": "array", "items": {"type": "string"}},
+    "metadata": {"type": "object"}
+  },
+  "$defs": {
+    "intExpr": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "value"],
+          "properties": {
+            "op": {"const": "literal"},
+            "value": {"type": "integer"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "name"],
+          "properties": {
+            "op": {"const": "symbol"},
+            "name": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "args"],
+          "properties": {
+            "op": {
+              "enum": ["add", "subtract", "multiply", "minimum", "maximum", "ceiling_divide"]
+            },
+            "args": {
+              "type": "array",
+              "minItems": 2,
+              "items": {"$ref": "#/$defs/intExpr"}
+            }
+          }
+        }
+      ]
+    },
+    "parameter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "value_type",
+        "default",
+        "minimum",
+        "category",
+        "tunable",
+        "quality_sensitive",
+        "description"
+      ],
+      "properties": {
+        "name": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+        "value_type": {"enum": ["integer", "boolean"]},
+        "default": {"type": ["integer", "boolean"]},
+        "minimum": {"type": ["integer", "null"]},
+        "category": {"enum": ["algorithm_budget", "algorithm_semantics", "workload_state"]},
+        "tunable": {"type": "boolean"},
+        "quality_sensitive": {"type": "boolean"},
+        "description": {"type": "string"}
+      }
+    },
+    "stage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stage_id",
+        "primitive",
+        "resource_role",
+        "multiplicity_upper_bound",
+        "token_extent_upper_bound",
+        "depends_on",
+        "readiness",
+        "batching_scope",
+        "cache_key_parts",
+        "tunable_runtime_fields",
+        "semantic_effect",
+        "description"
+      ],
+      "properties": {
+        "stage_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+        "primitive": {"enum": ["generate", "score", "reward", "reduce", "select"]},
+        "resource_role": {"enum": ["base_model", "proposal_model", "cpu"]},
+        "multiplicity_upper_bound": {"$ref": "#/$defs/intExpr"},
+        "token_extent_upper_bound": {
+          "oneOf": [{"$ref": "#/$defs/intExpr"}, {"type": "null"}]
+        },
+        "depends_on": {"type": "array", "items": {"type": "string"}},
+        "readiness": {"const": "all_dependencies"},
+        "batching_scope": {"enum": ["engine_continuous", "host_vectorized", "single_request"]},
+        "cache_key_parts": {"type": "array", "items": {"type": "string"}},
+        "tunable_runtime_fields": {"type": "array", "items": {"type": "string"}},
+        "semantic_effect": {"enum": ["preserves_algorithm", "changes_algorithm"]},
+        "description": {"type": "string"}
+      }
+    },
+    "loop": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stage_ids",
+        "maximum_iterations",
+        "state_variable",
+        "state_update",
+        "early_exit_conditions"
+      ],
+      "properties": {
+        "stage_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "maximum_iterations": {"$ref": "#/$defs/intExpr"},
+        "state_variable": {"type": "string"},
+        "state_update": {"type": "string"},
+        "early_exit_conditions": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}

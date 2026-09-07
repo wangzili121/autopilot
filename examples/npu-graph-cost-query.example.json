@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "stages": [
+    {
+      "stage_id": "candidate_generate",
+      "batch_size": 8,
+      "shape_tokens": 128,
+      "token_extent": 16,
+      "invocations": 2
+    },
+    {
+      "stage_id": "target_score",
+      "batch_size": 4,
+      "shape_tokens": 1024,
+      "token_extent": 128,
+      "invocations": 1
+    }
+  ]
+}

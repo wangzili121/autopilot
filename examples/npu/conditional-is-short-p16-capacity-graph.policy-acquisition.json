@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "acquisition_id": "conditional-is-short-p16-capacity-graph-next",
+  "policy_bundle_sha256": "246a353463d6ec2deebc0d31c489713164a626d2442c55189a87406fdf0478fe",
+  "candidate_budget": 1,
+  "require_policy_eligible": true,
+  "exclude_exactly_observed": true,
+  "maximum_changed_knobs": 1,
+  "maximum_normalized_distance": 0.15,
+  "minimum_normalized_optimistic_improvement": 0.0,
+  "weights": {
+    "optimistic_improvement": 1.0,
+    "uncertainty_width": 0.25,
+    "normalized_distance": 1.0,
+    "changed_knobs": 0.1
+  }
+}

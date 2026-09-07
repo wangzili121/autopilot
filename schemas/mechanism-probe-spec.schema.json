@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:mechanism-probe-spec:1.0",
+  "title": "Inference Autopilot Mechanism Probe Spec",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "probe_id",
+    "compiled_space_sha256",
+    "selection_context",
+    "control_settings",
+    "candidate_budget",
+    "maximum_changed_knobs",
+    "minimum_formal_control_rows",
+    "exclude_exactly_observed",
+    "thresholds"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "probe_id": {"$ref": "#/$defs/id"},
+    "compiled_space_sha256": {"$ref": "#/$defs/sha256"},
+    "selection_context": {"$ref": "#/$defs/selectionContext"},
+    "control_settings": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"pattern": "^[a-z0-9][a-z0-9._-]*$"},
+      "additionalProperties": {"$ref": "#/$defs/settingValue"}
+    },
+    "candidate_budget": {"type": "integer", "minimum": 1},
+    "maximum_changed_knobs": {"type": "integer", "minimum": 1},
+    "minimum_formal_control_rows": {"type": "integer", "minimum": 1},
+    "exclude_exactly_observed": {"type": "boolean"},
+    "thresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "compute_dominance_fraction",
+        "capacity_utilization_fraction",
+        "queue_to_running_ratio",
+        "kv_pressure_fraction",
+        "minimum_mechanism_score"
+      ],
+      "properties": {
+        "compute_dominance_fraction": {"type": "number", "minimum": 0, "maximum": 1},
+        "capacity_utilization_fraction": {"type": "number", "minimum": 0, "maximum": 1},
+        "queue_to_running_ratio": {"type": "number", "minimum": 0},
+        "kv_pressure_fraction": {"type": "number", "minimum": 0, "maximum": 1},
+        "minimum_mechanism_score": {"type": "number", "minimum": 0}
+      }
+    }
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "scalar": {"type": ["boolean", "number", "string"]},
+    "settingValue": {
+      "oneOf": [
+        {"$ref": "#/$defs/scalar"},
+        {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "integer", "minimum": 1}
+        }
+      ]
+    },
+    "numericRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minimum", "maximum"],
+      "properties": {
+        "minimum": {"type": "number"},
+        "maximum": {"type": "number"}
+      }
+    },
+    "selectionContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "algorithm_id",
+        "semantic_cohort_id",
+        "graph_sha256",
+        "accepted_evidence_semantic_classes",
+        "workload_id",
+        "environment_id",
+        "static_features",
+        "static_feature_ranges"
+      ],
+      "properties": {
+        "algorithm_id": {"$ref": "#/$defs/id"},
+        "semantic_cohort_id": {"$ref": "#/$defs/id"},
+        "graph_sha256": {"$ref": "#/$defs/sha256"},
+        "accepted_evidence_semantic_classes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "workload_id": {"$ref": "#/$defs/id"},
+        "environment_id": {"$ref": "#/$defs/id"},
+        "static_features": {
+          "type": "object",
+          "additionalProperties": {"$ref": "#/$defs/scalar"}
+        },
+        "static_feature_ranges": {
+          "type": "object",
+          "additionalProperties": {"$ref": "#/$defs/numericRange"}
+        }
+      }
+    }
+  }
+}

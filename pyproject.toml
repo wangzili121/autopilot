@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "inference-autopilot"
+version = "0.1.0"
+description = "Graph IR and evidence-led autotuning for inference workloads"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["tomli>=2; python_version < '3.11'"]
+
+[project.optional-dependencies]
+schema = ["jsonschema>=4.23"]
+
+[project.scripts]
+inference-autopilot = "inference_autopilot.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100

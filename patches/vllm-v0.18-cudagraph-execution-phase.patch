@@ -1,0 +1,34 @@
+diff --git a/vllm/compilation/cuda_graph.py b/vllm/compilation/cuda_graph.py
+--- a/vllm/compilation/cuda_graph.py
++++ b/vllm/compilation/cuda_graph.py
+@@ -32,9 +32,10 @@
+ @dataclasses.dataclass(frozen=True)
+ class CUDAGraphStat:
+     num_unpadded_tokens: int
+     num_padded_tokens: int
+     num_paddings: int
+     runtime_mode: str
++    execution_phase: str = "unknown"
+ 
+ 
+ class CUDAGraphLogging:
+@@ -43,7 +44,8 @@ class CUDAGraphLogging:
+     COLUMN_HEADERS = [
+         "Unpadded Tokens",
+         "Padded Tokens",
+         "Num Paddings",
+         "Runtime Mode",
++        "Execution Phase",
+         "Count",
+     ]
+@@ -79,9 +81,10 @@ class CUDAGraphLogging:
+             rows.append(
+                 [
+                     str(stat.num_unpadded_tokens),
+                     str(stat.num_padded_tokens),
+                     str(stat.num_paddings),
+                     stat.runtime_mode,
++                    stat.execution_phase,
+                     str(count),
+                 ]
+             )

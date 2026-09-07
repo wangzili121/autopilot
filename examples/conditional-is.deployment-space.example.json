@@ -1,0 +1,117 @@
+{
+  "schema_version": "1.0",
+  "space_id": "conditional-is-deployment-v1",
+  "algorithm_id": "conditional_is_small_proposal",
+  "fixed_settings": {
+    "base_batch_wait_seconds": 0.01,
+    "proposal_batch_wait_seconds": 0.01
+  },
+  "knobs": [
+    {
+      "name": "runtime.model_runner",
+      "setting_name": "model_runner",
+      "value_type": "string",
+      "domain": {"kind": "choices", "values": ["MRV1", "MRV2"]},
+      "change_scope": "engine_restart",
+      "semantic_effect": "preserves_algorithm",
+      "tuning_layer": "static_deployment",
+      "applies_to_stages": ["candidate_generate", "proposal_rollout_generate", "target_score"],
+      "capability_requirements": [
+        {
+          "capability_id": "vllm_ascend.model_runner.mrv2",
+          "values": ["MRV2"]
+        }
+      ],
+      "description": "vLLM model-runner implementation, benchmarked as a capability-gated deployment choice"
+    },
+    {
+      "name": "base.max_num_seqs",
+      "setting_name": "base_max_num_seqs",
+      "value_type": "integer",
+      "domain": {"kind": "choices", "values": [40, 128, 256, 384]},
+      "change_scope": "engine_restart",
+      "semantic_effect": "preserves_algorithm",
+      "tuning_layer": "static_deployment",
+      "applies_to_stages": ["candidate_generate", "target_score"],
+      "description": "Maximum active sequences on the base engine"
+    },
+    {
+      "name": "proposal.max_num_seqs",
+      "setting_name": "proposal_max_num_seqs",
+      "value_type": "integer",
+      "domain": {"kind": "choices", "values": [96, 384, 768, 896, 1024]},
+      "change_scope": "engine_restart",
+      "semantic_effect": "preserves_algorithm",
+      "tuning_layer": "static_deployment",
+      "applies_to_stages": ["proposal_rollout_generate"],
+      "description": "Maximum active sequences on the proposal engine"
+    },
+    {
+      "name": "base.max_num_batched_tokens",
+      "setting_name": "base_max_num_batched_tokens",
+      "value_type": "integer",
+      "domain": {"kind": "choices", "values": [10240, 32768, 65536]},
+      "change_scope": "engine_restart",
+      "semantic_effect": "preserves_algorithm",
+      "tuning_layer": "static_deployment",
+      "applies_to_stages": ["candidate_generate", "target_score"],
+      "description": "Base-engine scheduler token budget"
+    },
+    {
+      "name": "proposal.max_num_batched_tokens",
+      "setting_name": "proposal_max_num_batched_tokens",
+      "value_type": "integer",
+      "domain": {"kind": "choices", "values": [12288, 65536, 131072, 147456, 196608]},
+      "change_scope": "engine_restart",
+      "semantic_effect": "preserves_algorithm",
+      "tuning_layer": "static_deployment",
+      "applies_to_stages": ["proposal_rollout_generate"],
+      "description": "Proposal-engine scheduler token budget"
+    },
+    {
+      "name": "base.memory_fraction",
+      "setting_name": "base_memory_fraction",
+      "value_type": "number",
+      "domain": {"kind": "choices", "values": [0.50, 0.54, 0.58, 0.62]},
+      "change_scope": "engine_restart",
+      "semantic_effect": "preserves_algorithm",
+      "tuning_layer": "static_deployment",
+      "applies_to_stages": ["candidate_generate", "target_score"],
+      "description": "Base-engine device-memory fraction"
+    },
+    {
+      "name": "proposal.memory_fraction",
+      "setting_name": "proposal_memory_fraction",
+      "value_type": "number",
+      "domain": {"kind": "choices", "values": [0.28, 0.32, 0.36, 0.40]},
+      "change_scope": "engine_restart",
+      "semantic_effect": "preserves_algorithm",
+      "tuning_layer": "static_deployment",
+      "applies_to_stages": ["proposal_rollout_generate"],
+      "description": "Proposal-engine device-memory fraction"
+    },
+    {
+      "name": "base.score_priority",
+      "setting_name": "base_score_priority",
+      "value_type": "integer",
+      "domain": {"kind": "choices", "values": [0, 1]},
+      "change_scope": "policy_boundary",
+      "semantic_effect": "preserves_algorithm",
+      "tuning_layer": "hot_policy",
+      "applies_to_stages": ["target_score"],
+      "description": "Relative target-scoring priority inside the adapter"
+    }
+  ],
+  "constraints": [
+    {
+      "kind": "sum_less_equal",
+      "parameters": ["base.memory_fraction", "proposal.memory_fraction"],
+      "value": 0.92
+    },
+    {
+      "kind": "allowed_combinations",
+      "parameters": ["base.max_num_seqs", "proposal.max_num_seqs"],
+      "values": [[40, 96], [128, 384], [128, 768], [128, 1024], [256, 768], [256, 896], [256, 1024], [384, 768]]
+    }
+  ]
+}

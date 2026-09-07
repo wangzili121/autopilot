@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:calibration-assessment:1.0",
+  "title": "Inference Autopilot Calibration Assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "plan_sha256",
+    "total_group_count",
+    "formal_group_count",
+    "formal_complete",
+    "issues",
+    "effects",
+    "local_replay_noise_envelope",
+    "replay_noise_envelope",
+    "replay_noise_reference",
+    "ledger"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "plan_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "total_group_count": {"type": "integer", "minimum": 1},
+    "formal_group_count": {"type": "integer", "minimum": 0},
+    "formal_complete": {"type": "boolean"},
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "message", "comparison_group_id", "run_ids"],
+        "properties": {
+          "code": {"type": "string"},
+          "message": {"type": "string"},
+          "comparison_group_id": {"type": ["string", "null"]},
+          "run_ids": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "effects": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/comparisonEffect"}
+    },
+    "local_replay_noise_envelope": {"type": ["number", "null"], "minimum": 0},
+    "replay_noise_envelope": {"type": ["number", "null"], "minimum": 0},
+    "replay_noise_reference": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/replayNoiseReference"}
+      ]
+    },
+    "ledger": {"$ref": "evidence-ledger.schema.json"}
+  },
+  "$defs": {
+    "pairedMetricEffect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pair_index",
+        "workload_seed",
+        "baseline_run_id",
+        "candidate_run_id",
+        "baseline_value",
+        "candidate_value",
+        "candidate_over_baseline_ratio",
+        "directional_relative_improvement"
+      ],
+      "properties": {
+        "pair_index": {"type": "integer", "minimum": 0},
+        "workload_seed": {"type": "integer", "minimum": 0},
+        "baseline_run_id": {"type": "string", "minLength": 1},
+        "candidate_run_id": {"type": "string", "minLength": 1},
+        "baseline_value": {"type": "number", "exclusiveMinimum": 0},
+        "candidate_value": {"type": "number", "exclusiveMinimum": 0},
+        "candidate_over_baseline_ratio": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "directional_relative_improvement": {"type": "number"}
+      }
+    },
+    "comparisonEffect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "comparison_group_id",
+        "candidate_configuration_id",
+        "primary_metric",
+        "direction",
+        "replay_control",
+        "formal_group",
+        "quality_constraints_satisfied",
+        "expected_pair_count",
+        "complete_pair_count",
+        "pair_effects",
+        "candidate_over_baseline_geomean_ratio",
+        "median_directional_relative_improvement",
+        "effect_exceeds_replay_noise",
+        "effect_outside_replay_noise"
+      ],
+      "properties": {
+        "comparison_group_id": {"type": "string", "minLength": 1},
+        "candidate_configuration_id": {"type": "string", "minLength": 1},
+        "primary_metric": {"type": "string", "minLength": 1},
+        "direction": {"enum": ["maximize", "minimize"]},
+        "replay_control": {"type": "boolean"},
+        "formal_group": {"type": "boolean"},
+        "quality_constraints_satisfied": {"type": "boolean"},
+        "expected_pair_count": {"type": "integer", "minimum": 1},
+        "complete_pair_count": {"type": "integer", "minimum": 0},
+        "pair_effects": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/pairedMetricEffect"}
+        },
+        "candidate_over_baseline_geomean_ratio": {
+          "type": ["number", "null"],
+          "exclusiveMinimum": 0
+        },
+        "median_directional_relative_improvement": {
+          "type": ["number", "null"]
+        },
+        "effect_exceeds_replay_noise": {"type": ["boolean", "null"]},
+        "effect_outside_replay_noise": {"type": ["boolean", "null"]}
+      }
+    },
+    "replayNoiseReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "assessment_sha256",
+        "plan_sha256",
+        "primary_metric",
+        "direction",
+        "replay_noise_envelope",
+        "comparison_group_ids",
+        "algorithm_context_sha256",
+        "workload_context_sha256",
+        "environment_context_sha256",
+        "baseline_settings_sha256"
+      ],
+      "properties": {
+        "assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "plan_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "primary_metric": {"type": "string", "minLength": 1},
+        "direction": {"enum": ["maximize", "minimize"]},
+        "replay_noise_envelope": {"type": "number", "minimum": 0},
+        "comparison_group_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "algorithm_context_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "workload_context_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "environment_context_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "baseline_settings_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    }
+  }
+}

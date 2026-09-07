@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:policy-transfer-plan:1.0",
+  "title": "Inference Autopilot Policy Transfer Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "producer",
+    "transfer_id",
+    "status",
+    "source",
+    "source_context",
+    "target_context",
+    "policy",
+    "guard_evaluation",
+    "calibration_spec",
+    "audit",
+    "policy_transfer_plan_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "producer": {"type": "string", "minLength": 1},
+    "transfer_id": {"$ref": "#/$defs/id"},
+    "status": {"enum": ["planned", "blocked"]},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "transfer_spec_sha256",
+        "policy_bundle_sha256",
+        "calibration_template_sha256"
+      ],
+      "properties": {
+        "transfer_spec_sha256": {"$ref": "#/$defs/digest"},
+        "policy_bundle_sha256": {"$ref": "#/$defs/digest"},
+        "calibration_template_sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "source_context": {"type": "object"},
+    "target_context": {"type": "object"},
+    "policy": {"type": "object"},
+    "guard_evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "on_violation",
+        "allowed_deviations",
+        "deviations",
+        "unallowed_deviations",
+        "deferred_runtime_checks",
+        "within_range_checks"
+      ],
+      "properties": {
+        "on_violation": {"const": "fallback"},
+        "allowed_deviations": {"type": "array", "items": {"type": "string"}},
+        "deviations": {"type": "array", "items": {"$ref": "#/$defs/deviation"}},
+        "unallowed_deviations": {"type": "array", "items": {"type": "string"}},
+        "deferred_runtime_checks": {"type": "array", "items": {"type": "object"}},
+        "within_range_checks": {"type": "array", "items": {"type": "object"}}
+      }
+    },
+    "calibration_spec": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "calibration-spec.schema.json"}
+      ]
+    },
+    "audit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "guard_deviation_count",
+        "unallowed_guard_deviation_count",
+        "deferred_runtime_check_count",
+        "configuration_change_count",
+        "requires_engine_restart",
+        "calibration_candidate_count"
+      ],
+      "properties": {
+        "guard_deviation_count": {"type": "integer", "minimum": 0},
+        "unallowed_guard_deviation_count": {"type": "integer", "minimum": 0},
+        "deferred_runtime_check_count": {"type": "integer", "minimum": 0},
+        "configuration_change_count": {"type": "integer", "minimum": 0},
+        "requires_engine_restart": {"type": "boolean"},
+        "calibration_candidate_count": {"type": "integer", "minimum": 0}
+      }
+    },
+    "policy_transfer_plan_sha256": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "deviation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "field", "expected", "actual", "allowed"],
+      "properties": {
+        "code": {"type": "string", "minLength": 1},
+        "field": {"type": "string", "minLength": 1},
+        "expected": {},
+        "actual": {},
+        "allowed": {"type": "boolean"}
+      }
+    }
+  }
+}

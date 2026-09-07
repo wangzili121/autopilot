@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "pool_id": "conditional-is-short-p32-npu2-runtime-v1",
+  "semantic_contract": {
+    "algorithm_id": "conditional_is_small_proposal",
+    "semantic_cohort_id": "conditional_is_small_proposal",
+    "graph_sha256": "a46acdc960d12f5dab0af3515d083f1cf6780af34870e1febc01f85e86249cea",
+    "accepted_semantic_classes": [
+      "exact"
+    ]
+  },
+  "fallback_endpoint": {
+    "endpoint_id": "conditional-is-npu2-fallback-40-48-g48",
+    "deployment_settings": {
+      "base_batch_wait_seconds": 0.0,
+      "base_graph_capture_sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        24,
+        32,
+        40
+      ],
+      "base_graph_mode": "FULL_DECODE_ONLY",
+      "base_max_num_batched_tokens": 10240,
+      "base_max_num_seqs": 40,
+      "base_memory_fraction": 0.54,
+      "base_score_priority": 1,
+      "model_runner": "MRV1",
+      "proposal_batch_wait_seconds": 0.02,
+      "proposal_graph_capture_sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        24,
+        32,
+        40,
+        48
+      ],
+      "proposal_graph_mode": "FULL_DECODE_ONLY",
+      "proposal_max_num_batched_tokens": 12288,
+      "proposal_max_num_seqs": 48,
+      "proposal_memory_fraction": 0.36
+    }
+  },
+  "policy_endpoints": [
+    {
+      "endpoint_id": "conditional-is-short-p32-npu2-40-64-g64",
+      "policy_bundle_sha256": "498d7be17696414567e87f7040a63389162d6873377ce794e5372980dd3b1fd1",
+      "policy_holdout_assessment_sha256": "d35f5717f87c94eda7fda240010c8afcfe53309159c5d8a1f8c3dd6823057275",
+      "priority": 100
+    }
+  ],
+  "routing_policy": {
+    "require_safe_boundary": true,
+    "minimum_live_metric_samples": 32,
+    "maximum_consecutive_failures": 0,
+    "live_constraints": [
+      {
+        "target": "latency.p95_seconds",
+        "operator": "<=",
+        "value": 130.0
+      },
+      {
+        "target": "runtime.num_preemptions_delta",
+        "operator": "<=",
+        "value": 0.0
+      }
+    ],
+    "on_no_match": "fallback",
+    "on_ambiguous_match": "fallback",
+    "on_health_violation": "fallback"
+  }
+}

@@ -1,0 +1,264 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:graph-experiment-assessment:1.0",
+  "title": "Inference Autopilot Graph Experiment Assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "graph_experiment_plan_sha256",
+    "comparison_id",
+    "expected_run_count",
+    "valid_run_count",
+    "startup_comparable",
+    "steady_state_comparable",
+    "formal_claim_eligible",
+    "evidence_tier",
+    "issues",
+    "runs",
+    "pairs",
+    "summary",
+    "graph_experiment_assessment_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "graph_experiment_plan_sha256": {"$ref": "#/$defs/sha256"},
+    "comparison_id": {"$ref": "#/$defs/id"},
+    "expected_run_count": {"type": "integer", "minimum": 1},
+    "valid_run_count": {"type": "integer", "minimum": 0},
+    "startup_comparable": {"type": "boolean"},
+    "steady_state_comparable": {"type": "boolean"},
+    "formal_claim_eligible": {"type": "boolean"},
+    "evidence_tier": {"enum": ["formal_paired", "diagnostic", "invalid"]},
+    "issues": {"type": "array", "items": {"$ref": "#/$defs/issue"}},
+    "runs": {"type": "array", "items": {"$ref": "#/$defs/runEvidence"}},
+    "pairs": {"type": "array", "items": {"$ref": "#/$defs/pairEvidence"}},
+    "summary": {"$ref": "#/$defs/summary"},
+    "graph_experiment_assessment_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "nullableNumber": {"type": ["number", "null"]},
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "message", "severity", "run_ids", "pair_index"],
+      "properties": {
+        "code": {"$ref": "#/$defs/id"},
+        "message": {"type": "string", "minLength": 1},
+        "severity": {"enum": ["error", "warning"]},
+        "run_ids": {"type": "array", "items": {"$ref": "#/$defs/id"}},
+        "pair_index": {"type": ["integer", "null"], "minimum": 0}
+      }
+    },
+    "graphProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "engine_role",
+        "graph_mode",
+        "event_count",
+        "graph_event_count",
+        "graph_hit_rate",
+        "padding_units",
+        "padding_ratio",
+        "configured_capture_sizes",
+        "used_capture_sizes",
+        "trace_preserving_capture_sizes",
+        "unused_capture_sizes",
+        "bucket_event_counts",
+        "eager_shape_counts"
+      ],
+      "properties": {
+        "engine_role": {"enum": ["base", "proposal"]},
+        "graph_mode": {"type": "string", "minLength": 1},
+        "event_count": {"type": "integer", "minimum": 1},
+        "graph_event_count": {"type": "integer", "minimum": 0},
+        "graph_hit_rate": {"type": "number", "minimum": 0, "maximum": 1},
+        "padding_units": {"type": "integer", "minimum": 0},
+        "padding_ratio": {"type": "number", "minimum": 0},
+        "configured_capture_sizes": {"$ref": "#/$defs/intArray"},
+        "used_capture_sizes": {"$ref": "#/$defs/intArray"},
+        "trace_preserving_capture_sizes": {"$ref": "#/$defs/intArray"},
+        "unused_capture_sizes": {"$ref": "#/$defs/intArray"},
+        "bucket_event_counts": {"$ref": "#/$defs/countMap"},
+        "eager_shape_counts": {"$ref": "#/$defs/countMap"}
+      }
+    },
+    "intArray": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "integer", "minimum": 1}
+    },
+    "countMap": {
+      "type": "object",
+      "propertyNames": {"pattern": "^[1-9][0-9]*$"},
+      "additionalProperties": {"type": "integer", "minimum": 1}
+    },
+    "startupCost": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["graph_capture_seconds", "graph_capture_gib", "engine_init_seconds"],
+      "properties": {
+        "graph_capture_seconds": {"type": "number", "minimum": 0},
+        "graph_capture_gib": {"type": "number", "minimum": 0},
+        "engine_init_seconds": {"type": "number", "minimum": 0},
+        "wrapper_load_seconds": {"type": "number", "exclusiveMinimum": 0}
+      }
+    },
+    "runEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "policy_id",
+        "workload_seed",
+        "result_path",
+        "result_sha256",
+        "completed_qps",
+        "mean_latency_seconds",
+        "elapsed_seconds",
+        "accuracy",
+        "total_forward_token_slots",
+        "request_count",
+        "output_sha256",
+        "semantic_answer_sha256",
+        "provenance_complete",
+        "provenance",
+        "graph_profiles",
+        "startup"
+      ],
+      "properties": {
+        "run_id": {"$ref": "#/$defs/id"},
+        "policy_id": {"$ref": "#/$defs/id"},
+        "workload_seed": {"type": "integer", "minimum": 0},
+        "result_path": {"type": "string", "minLength": 1},
+        "result_sha256": {"$ref": "#/$defs/sha256"},
+        "completed_qps": {"type": "number", "exclusiveMinimum": 0},
+        "mean_latency_seconds": {"type": "number", "exclusiveMinimum": 0},
+        "elapsed_seconds": {"type": "number", "exclusiveMinimum": 0},
+        "accuracy": {"type": "number"},
+        "total_forward_token_slots": {"type": "integer", "minimum": 1},
+        "request_count": {"type": "integer", "minimum": 1},
+        "output_sha256": {"$ref": "#/$defs/sha256"},
+        "semantic_answer_sha256": {"$ref": "#/$defs/sha256"},
+        "provenance_complete": {"type": "boolean"},
+        "provenance": {
+          "type": "object",
+          "propertyNames": {"pattern": "^[a-z][a-z0-9_]*$"},
+          "additionalProperties": {"type": "string"}
+        },
+        "graph_profiles": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["base", "proposal"],
+          "properties": {
+            "base": {"$ref": "#/$defs/graphProfile"},
+            "proposal": {"$ref": "#/$defs/graphProfile"}
+          }
+        },
+        "startup": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["base", "proposal"],
+          "properties": {
+            "base": {"$ref": "#/$defs/startupCost"},
+            "proposal": {"$ref": "#/$defs/startupCost"}
+          }
+        }
+      }
+    },
+    "pairEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pair_index",
+        "workload_seed",
+        "baseline_run_id",
+        "candidate_run_id",
+        "workload_config_exact",
+        "environment_exact",
+        "request_identity_exact",
+        "semantic_answers_exact",
+        "outputs_exact",
+        "compute_work_exact",
+        "steady_state_comparable",
+        "compared_request_count",
+        "exact_output_count",
+        "semantic_answer_match_count",
+        "accuracy_candidate_minus_baseline",
+        "ratios",
+        "startup_deltas"
+      ],
+      "properties": {
+        "pair_index": {"type": "integer", "minimum": 0},
+        "workload_seed": {"type": "integer", "minimum": 0},
+        "baseline_run_id": {"$ref": "#/$defs/id"},
+        "candidate_run_id": {"$ref": "#/$defs/id"},
+        "workload_config_exact": {"type": "boolean"},
+        "environment_exact": {"type": "boolean"},
+        "request_identity_exact": {"type": "boolean"},
+        "semantic_answers_exact": {"type": "boolean"},
+        "outputs_exact": {"type": "boolean"},
+        "compute_work_exact": {"type": "boolean"},
+        "steady_state_comparable": {"type": "boolean"},
+        "compared_request_count": {"type": "integer", "minimum": 0},
+        "exact_output_count": {"type": "integer", "minimum": 0},
+        "semantic_answer_match_count": {"type": "integer", "minimum": 0},
+        "accuracy_candidate_minus_baseline": {"type": "number"},
+        "ratios": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "completed_qps_candidate_over_baseline",
+            "elapsed_candidate_over_baseline",
+            "forward_token_slots_candidate_over_baseline",
+            "mean_latency_candidate_over_baseline"
+          ],
+          "properties": {
+            "completed_qps_candidate_over_baseline": {"type": "number", "exclusiveMinimum": 0},
+            "elapsed_candidate_over_baseline": {"type": "number", "exclusiveMinimum": 0},
+            "forward_token_slots_candidate_over_baseline": {"type": "number", "exclusiveMinimum": 0},
+            "mean_latency_candidate_over_baseline": {"type": "number", "exclusiveMinimum": 0}
+          }
+        },
+        "startup_deltas": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "engine_init_seconds_candidate_minus_baseline",
+            "graph_capture_seconds_candidate_minus_baseline"
+          ],
+          "properties": {
+            "engine_init_seconds_candidate_minus_baseline": {"type": "number"},
+            "graph_capture_seconds_candidate_minus_baseline": {"type": "number"},
+            "wrapper_load_seconds_candidate_minus_baseline": {"type": "number"}
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pair_count",
+        "steady_state_comparable_pair_count",
+        "all_pairs_qps_geomean_ratio",
+        "comparable_pairs_qps_geomean_ratio",
+        "median_graph_capture_seconds_delta",
+        "median_engine_init_seconds_delta",
+        "median_wrapper_load_seconds_delta"
+      ],
+      "properties": {
+        "pair_count": {"type": "integer", "minimum": 0},
+        "steady_state_comparable_pair_count": {"type": "integer", "minimum": 0},
+        "all_pairs_qps_geomean_ratio": {"$ref": "#/$defs/nullableNumber"},
+        "comparable_pairs_qps_geomean_ratio": {"$ref": "#/$defs/nullableNumber"},
+        "median_graph_capture_seconds_delta": {"$ref": "#/$defs/nullableNumber"},
+        "median_engine_init_seconds_delta": {"$ref": "#/$defs/nullableNumber"},
+        "median_wrapper_load_seconds_delta": {"$ref": "#/$defs/nullableNumber"}
+      }
+    }
+  }
+}

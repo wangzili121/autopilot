@@ -1,0 +1,244 @@
+{
+  "baseline": {
+    "configuration_id": "conditional-is-medium2k-p32-off16k-control",
+    "description": "Measured medium2k policy with proposal 16K and sharded admission disabled",
+    "settings": {
+      "base_batch_wait_seconds": 0,
+      "base_graph_capture_sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        24,
+        32,
+        40
+      ],
+      "base_graph_mode": "FULL_DECODE_ONLY",
+      "base_max_num_batched_tokens": 10240,
+      "base_max_num_seqs": 40,
+      "base_memory_fraction": 0.54,
+      "base_score_priority": 1,
+      "model_runner": "MRV1",
+      "proposal_batch_wait_seconds": 0.02,
+      "proposal_graph_capture_sizes": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        24,
+        32,
+        40,
+        48
+      ],
+      "proposal_graph_mode": "FULL_DECODE_ONLY",
+      "proposal_graph_capture_ceiling": 48,
+      "proposal_max_num_batched_tokens": 16384,
+      "proposal_max_num_seqs": 48,
+      "proposal_memory_fraction": 0.36,
+      "proposal_stage_wavefront_max_wait_seconds": 0.5,
+      "proposal_stage_wavefront_min_utilization": 0.65,
+      "proposal_stage_wavefront_mode": "off"
+    }
+  },
+  "campaign_id": "cis-small-proposal-medium2k-p32-off16k-retry-aware-replay-npu2-20260907-r8",
+  "candidates": [
+    {
+      "configuration_id": "conditional-is-medium2k-p32-off16k-retry-aware-replay-control",
+      "description": "Manifest-identical proposal-16K replay under retry-aware host admission",
+      "settings": {
+        "base_batch_wait_seconds": 0,
+        "base_graph_capture_sizes": [
+          1,
+          2,
+          4,
+          8,
+          16,
+          24,
+          32,
+          40
+        ],
+        "base_graph_mode": "FULL_DECODE_ONLY",
+        "base_max_num_batched_tokens": 10240,
+        "base_max_num_seqs": 40,
+        "base_memory_fraction": 0.54,
+        "base_score_priority": 1,
+        "model_runner": "MRV1",
+        "proposal_batch_wait_seconds": 0.02,
+        "proposal_graph_capture_sizes": [
+          1,
+          2,
+          4,
+          8,
+          16,
+          24,
+          32,
+          40,
+          48
+        ],
+        "proposal_graph_mode": "FULL_DECODE_ONLY",
+        "proposal_graph_capture_ceiling": 48,
+        "proposal_max_num_batched_tokens": 16384,
+        "proposal_max_num_seqs": 48,
+        "proposal_memory_fraction": 0.36,
+        "proposal_stage_wavefront_max_wait_seconds": 0.5,
+        "proposal_stage_wavefront_min_utilization": 0.65,
+        "proposal_stage_wavefront_mode": "off"
+      }
+    }
+  ],
+  "environment_contract": {
+    "environment_id": "liteserver-159-npu2-ascend910b3-vllm018-20260905",
+    "hardware": {
+      "device_count": 1,
+      "device_model": "Ascend 910B3",
+      "physical_device_id": 2,
+      "topology": "single-node-single-device"
+    },
+    "models": {
+      "base": {
+        "model_id": "Qwen2.5-1.5B-Instruct",
+        "weights_sha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee"
+      },
+      "proposal": {
+        "model_id": "Qwen2.5-0.5B-Instruct",
+        "weights_sha256": "fdf756fa7fcbe7404d5c60e26bff1a0c8b8aa1f72ced49e7dd0210fe288fb7fe"
+      }
+    },
+    "software": {
+      "ascend_driver_version": "25.5.1",
+      "container_image": "quay.io/ascend/vllm-ascend:v0.18.0",
+      "inference_scaling_commit": "bd37a2799010724a0d624241635bb42795908ec2",
+      "inference_scaling_dirty": true,
+      "inference_scaling_source_sha256": "4cd534ae6f5447918ff553fa9e2320457ef163e3c369af83a5dbfcc6f8dad917",
+      "vllm_ascend_version": "0.18.0",
+      "vllm_version": "0.18.0+empty"
+    }
+  },
+  "objective": {
+    "constraints": [
+      {
+        "metric": "latency_seconds.p95",
+        "operator": "<=",
+        "value": 180
+      },
+      {
+        "metric": "accuracy",
+        "operator": ">=",
+        "value": 0.25
+      },
+      {
+        "metric": "proposal_stage_wavefront_oversized_atomic_run_count",
+        "operator": "<=",
+        "value": 0
+      },
+      {
+        "metric": "proposal_stage_wavefront_cancelled_shard_count",
+        "operator": "<=",
+        "value": 0
+      },
+      {
+        "metric": "proposal_stage_wavefront_fairness_violation_count",
+        "operator": "<=",
+        "value": 0
+      },
+      {
+        "metric": "proposal_stage_wavefront_oversized_wave_count",
+        "operator": "<=",
+        "value": 0
+      },
+      {
+        "metric": "proposal_stage_wavefront_dispatch_failure_count",
+        "operator": "<=",
+        "value": 0
+      }
+    ],
+    "direction": "maximize",
+    "primary_metric": "completed_qps"
+  },
+  "protocol": {
+    "blocks": 1,
+    "pair_seeds": [
+      2026090627,
+      2026090628
+    ],
+    "pattern": "ABBA"
+  },
+  "required_metrics": [
+    "completed_qps",
+    "latency_seconds.p50",
+    "latency_seconds.p95",
+    "latency_seconds.p99",
+    "accuracy",
+    "proposal_kv_peak_fraction",
+    "compute.total_forward_token_slots",
+    "compute.estimated_dense_forward_flops",
+    "proposal_stage_wavefront_enabled",
+    "proposal_stage_wavefront_wave_count",
+    "proposal_stage_wavefront_partial_wave_fraction",
+    "proposal_stage_wavefront_oversized_wave_count",
+    "proposal_stage_wavefront_target_release_fraction",
+    "proposal_stage_wavefront_sequence_capacity_release_fraction",
+    "proposal_stage_wavefront_prefill_capacity_release_fraction",
+    "proposal_stage_wavefront_timeout_release_fraction",
+    "proposal_stage_wavefront_mean_admission_wait_seconds",
+    "proposal_stage_wavefront_max_admission_wait_seconds",
+    "proposal_stage_wavefront_admitted_parent_groups",
+    "proposal_stage_wavefront_admitted_shards",
+    "proposal_stage_wavefront_completed_parent_groups",
+    "proposal_stage_wavefront_repeated_prefix_run_count",
+    "proposal_stage_wavefront_preserved_prefix_run_count",
+    "proposal_stage_wavefront_forced_split_run_count",
+    "proposal_stage_wavefront_oversized_atomic_run_count",
+    "proposal_stage_wavefront_cancelled_shard_count",
+    "proposal_stage_wavefront_fairness_violation_count",
+    "proposal_stage_wavefront_cross_parent_wave_fraction",
+    "proposal_stage_wavefront_mean_parent_groups_per_wave",
+    "proposal_stage_wavefront_mean_wave_sequence_utilization",
+    "proposal_stage_wavefront_mean_wave_prefill_utilization",
+    "proposal_stage_wavefront_max_shards_for_one_parent",
+    "proposal_stage_wavefront_mean_parent_completion_span_seconds",
+    "proposal_stage_wavefront_max_parent_completion_span_seconds",
+    "proposal_stage_wavefront_max_inflight_waves",
+    "proposal_stage_wavefront_max_inflight_sequences",
+    "proposal_stage_wavefront_sequence_credit_stall_count",
+    "proposal_stage_wavefront_sequence_credit_stall_seconds",
+    "proposal_stage_wavefront_dispatch_failure_count",
+    "proposal_stage_wavefront_streaming_sequence_credit_release_count",
+    "proposal_stage_wavefront_batch_sequence_credit_release_count",
+    "proposal_stage_wavefront_streaming_credit_fraction"
+  ],
+  "schema_version": "1.0",
+  "semantic_contract": {
+    "algorithm_id": "conditional_is_small_proposal",
+    "graph_sha256": "a46acdc960d12f5dab0af3515d083f1cf6780af34870e1febc01f85e86249cea",
+    "invariants": {
+      "apply_importance_correction": true,
+      "automatic_prefix_caching": true,
+      "block_size": 48,
+      "candidate_count": 8,
+      "chunked_prefill": true,
+      "model_runner": "MRV1",
+      "rollout_count": 3,
+      "sampler": "native_ascend_categorical",
+      "total_length": 192
+    },
+    "semantic_class": "exact"
+  },
+  "strong_baseline": true,
+  "workload_contract": {
+    "arrival_trace_sha256": "f42d6213f3053de61647f1a159207d44b5369b6ec71cf730907cdbd4da094a38",
+    "dataset_sha256": "3730d312f6e3440559ace48831e51066acaca737f6eabec99bccb9e4b3c39d14",
+    "parameters": {
+      "arrival_qps": 0,
+      "context_tokens": 2048,
+      "dataset": "GSM8K",
+      "prefix_mode": "unique",
+      "prompt_length_regime": "medium2k",
+      "requests": 32,
+      "workers": 32
+    },
+    "workload_id": "gsm8k-medium2k-p32-closed-loop-20260905-transfer"
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "schema_version": "1.0",
+  "policy_id": "conditional-is-short-p96-offline-v1",
+  "compiled_space_sha256": "89912276ff57663961b80d72e25e454d7ff564334eda598a81a9ae89c67080d3",
+  "selection_context": {
+    "algorithm_id": "conditional_is_small_proposal",
+    "semantic_cohort_id": "conditional_is_small_proposal",
+    "graph_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+    "accepted_evidence_semantic_classes": [
+      "exact",
+      "exact_algorithm",
+      "legacy_unverified_exact_candidate"
+    ],
+    "workload_id": "gsm8k-short-p96-closed-loop",
+    "environment_id": "replace-with-frozen-ascend-environment",
+    "static_features": {
+      "workload.arrival_qps": 0.0,
+      "workload.workers": 96
+    },
+    "static_feature_ranges": {
+      "workload.prompt_tokens.mean": {"minimum": 0, "maximum": 512},
+      "workload.requests": {"minimum": 32, "maximum": 128}
+    }
+  },
+  "query_static_features": {
+    "algorithm.apply_importance_correction": true,
+    "algorithm.block_size": 128,
+    "algorithm.candidate_count": 15,
+    "algorithm.rollout_count": 3,
+    "algorithm.total_length": 512,
+    "workload.prompt_tokens.mean": 128.0,
+    "workload.requests": 96
+  },
+  "baseline_settings": {
+    "model_runner": "MRV1",
+    "base_max_num_seqs": 256,
+    "proposal_max_num_seqs": 896,
+    "base_max_num_batched_tokens": 65536,
+    "proposal_max_num_batched_tokens": 147456,
+    "base_memory_fraction": 0.54,
+    "proposal_memory_fraction": 0.36,
+    "base_batch_wait_seconds": 0.01,
+    "proposal_batch_wait_seconds": 0.01,
+    "base_score_priority": 1
+  },
+  "objective": {
+    "target": "performance.completed_qps",
+    "direction": "maximize",
+    "constraints": [
+      {"target": "latency.p95_seconds", "operator": "<=", "value": 300.0},
+      {"target": "quality.accuracy", "operator": ">=", "value": 0.4}
+    ]
+  },
+  "model": {
+    "feature_names": [
+      "algorithm.apply_importance_correction",
+      "algorithm.block_size",
+      "algorithm.candidate_count",
+      "algorithm.rollout_count",
+      "algorithm.total_length",
+      "deployment.base_max_num_batched_tokens",
+      "deployment.base_max_num_seqs",
+      "deployment.base_memory_fraction",
+      "deployment.base_score_priority",
+      "deployment.model_runner",
+      "deployment.proposal_max_num_batched_tokens",
+      "deployment.proposal_max_num_seqs",
+      "deployment.proposal_memory_fraction",
+      "workload.prompt_tokens.mean",
+      "workload.requests"
+    ],
+    "neighbors": 5,
+    "distance_power": 2.0,
+    "maximum_normalized_distance": 0.35,
+    "uncertainty_multiplier": 1.5,
+    "maximum_failure_probability": 0.1,
+    "minimum_response_rows": 8,
+    "minimum_distinct_configurations": 4,
+    "minimum_paired_replicates": 2,
+    "ranked_candidate_limit": 20
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:policy-transfer-spec:1.0",
+  "title": "Inference Autopilot Policy Transfer Spec",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "transfer_id",
+    "policy_bundle_sha256",
+    "campaign_id",
+    "protocol",
+    "target_workload_contract",
+    "allowed_guard_deviations",
+    "include_replay_control"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "transfer_id": {"$ref": "#/$defs/id"},
+    "policy_bundle_sha256": {"$ref": "#/$defs/digest"},
+    "campaign_id": {"$ref": "#/$defs/id"},
+    "protocol": {"$ref": "calibration-spec.schema.json#/$defs/protocol"},
+    "target_workload_contract": {
+      "$ref": "calibration-spec.schema.json#/$defs/workloadContract"
+    },
+    "allowed_guard_deviations": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "include_replay_control": {"type": "boolean"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

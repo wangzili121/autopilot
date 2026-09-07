@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://inference-autopilot.local/schemas/engine-lifecycle-plan.schema.json",
+  "title": "Engine Lifecycle Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "producer",
+    "lifecycle_id",
+    "status",
+    "requirements",
+    "source",
+    "engine_runs",
+    "strategies",
+    "selected_strategy",
+    "actions",
+    "validation_gate",
+    "audit",
+    "engine_lifecycle_plan_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "producer": {"type": "string"},
+    "lifecycle_id": {"type": "string"},
+    "status": {"const": "validation_required"},
+    "requirements": {"type": "object"},
+    "source": {"type": "object"},
+    "engine_runs": {"type": "array", "minItems": 1},
+    "strategies": {"type": "array", "minItems": 3},
+    "selected_strategy": {"type": "string"},
+    "actions": {"type": "array"},
+    "validation_gate": {"type": "object"},
+    "audit": {"type": "object"},
+    "engine_lifecycle_plan_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

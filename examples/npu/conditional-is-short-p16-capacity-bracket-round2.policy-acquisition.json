@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "acquisition_id": "conditional-is-short-p16-capacity-bracket-round-2",
+  "policy_bundle_sha256": "2b19b2c0acd8204ff604b6f5c9056f7cd66423cc4c4629896327edd2b884fb14",
+  "candidate_budget": 1,
+  "require_policy_eligible": true,
+  "exclude_exactly_observed": true,
+  "maximum_changed_knobs": 1,
+  "maximum_normalized_distance": 0.15,
+  "minimum_normalized_optimistic_improvement": 0.0,
+  "weights": {
+    "optimistic_improvement": 1.0,
+    "uncertainty_width": 0.25,
+    "normalized_distance": 1.0,
+    "changed_knobs": 0.1
+  }
+}

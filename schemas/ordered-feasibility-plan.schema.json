@@ -1,0 +1,185 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:inference-autopilot:schema:ordered-feasibility-plan:1.0",
+  "title": "Inference Autopilot Ordered Feasibility Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "producer",
+    "probe_id",
+    "parameter_name",
+    "source_spec_sha256",
+    "context",
+    "context_sha256",
+    "ordered_values",
+    "required_success_observations",
+    "required_resource_exhausted_observations",
+    "observations",
+    "value_states",
+    "confirmed_feasible_values",
+    "confirmed_resource_exhausted_values",
+    "inferred_resource_exhausted_values",
+    "provisional_recommendation",
+    "next_probe_value",
+    "search_complete",
+    "eligible",
+    "rejection_reasons",
+    "audit",
+    "ordered_feasibility_plan_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "producer": {"type": "string", "minLength": 1},
+    "probe_id": {"$ref": "#/$defs/id"},
+    "parameter_name": {"$ref": "#/$defs/id"},
+    "source_spec_sha256": {"$ref": "#/$defs/digest"},
+    "context": {
+      "allOf": [
+        {"$ref": "#/$defs/scalarMap"},
+        {"minProperties": 1}
+      ]
+    },
+    "context_sha256": {"$ref": "#/$defs/digest"},
+    "ordered_values": {"$ref": "#/$defs/values"},
+    "required_success_observations": {"type": "integer", "minimum": 1},
+    "required_resource_exhausted_observations": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "observations": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/observation"}
+    },
+    "value_states": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/valueState"}
+    },
+    "confirmed_feasible_values": {"$ref": "#/$defs/values"},
+    "confirmed_resource_exhausted_values": {"$ref": "#/$defs/values"},
+    "inferred_resource_exhausted_values": {"$ref": "#/$defs/values"},
+    "provisional_recommendation": {"$ref": "#/$defs/nullableValue"},
+    "next_probe_value": {"$ref": "#/$defs/nullableValue"},
+    "search_complete": {"type": "boolean"},
+    "eligible": {"type": "boolean"},
+    "rejection_reasons": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "mixed_outcomes_at_value",
+          "non_monotone_resource_boundary"
+        ]
+      }
+    },
+    "audit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "probe_id",
+        "parameter_name",
+        "context_sha256",
+        "observation_count",
+        "states",
+        "provisional_recommendation",
+        "next_probe_value",
+        "search_complete",
+        "eligible",
+        "rejection_reasons"
+      ],
+      "properties": {
+        "probe_id": {"$ref": "#/$defs/id"},
+        "parameter_name": {"$ref": "#/$defs/id"},
+        "context_sha256": {"$ref": "#/$defs/digest"},
+        "observation_count": {"type": "integer", "minimum": 0},
+        "states": {
+          "type": "object",
+          "additionalProperties": {"type": "integer", "minimum": 0}
+        },
+        "provisional_recommendation": {"$ref": "#/$defs/nullableValue"},
+        "next_probe_value": {"$ref": "#/$defs/nullableValue"},
+        "search_complete": {"type": "boolean"},
+        "eligible": {"type": "boolean"},
+        "rejection_reasons": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "ordered_feasibility_plan_sha256": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "scalar": {"type": ["boolean", "number", "string"]},
+    "scalarMap": {
+      "type": "object",
+      "propertyNames": {"type": "string", "minLength": 1},
+      "additionalProperties": {"$ref": "#/$defs/scalar"}
+    },
+    "values": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "integer", "minimum": 1}
+    },
+    "nullableValue": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "integer", "minimum": 1}
+      ]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "imported_format", "locator"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/digest"},
+        "imported_format": {"type": "string", "minLength": 1},
+        "locator": {"type": "string", "minLength": 1}
+      }
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["attempt_id", "value", "outcome", "source", "details"],
+      "properties": {
+        "attempt_id": {"$ref": "#/$defs/id"},
+        "value": {"type": "integer", "minimum": 1},
+        "outcome": {"enum": ["success", "resource_exhausted"]},
+        "source": {"$ref": "#/$defs/source"},
+        "details": {"$ref": "#/$defs/scalarMap"}
+      }
+    },
+    "valueState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "success_observations",
+        "resource_exhausted_observations",
+        "state"
+      ],
+      "properties": {
+        "value": {"type": "integer", "minimum": 1},
+        "success_observations": {"type": "integer", "minimum": 0},
+        "resource_exhausted_observations": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "state": {
+          "enum": [
+            "unobserved",
+            "pending_success_confirmation",
+            "pending_resource_exhausted_confirmation",
+            "confirmed_feasible",
+            "confirmed_resource_exhausted",
+            "mixed"
+          ]
+        }
+      }
+    }
+  }
+}
