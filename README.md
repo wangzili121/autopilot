@@ -5,6 +5,10 @@ algorithms as performance graphs and turning heterogeneous benchmark artifacts
 into auditable optimization evidence. It is being developed independently and
 can later be integrated into Muyuan as an infra plugin.
 
+For a Chinese project-level view of the product, verified progress, measured
+effects, and upcoming milestones, see the [project progress center](project/README.md).
+Paper surveys and individual readings are indexed in [papers](papers/README.md).
+
 The project now provides the contracts and the first workload-aware policy
 planner needed by an automatic tuner:
 
