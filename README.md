@@ -8,6 +8,8 @@ can later be integrated into Muyuan as an infra plugin.
 For a Chinese project-level view of the product, verified progress, measured
 effects, and upcoming milestones, see the [project progress center](project/README.md).
 Paper surveys and individual readings are indexed in [papers](papers/README.md).
+Existing systems, vendor tools, overlap, and remaining project boundaries are
+tracked in [related work](related_work/README.md).
 
 The project now provides the contracts and the first workload-aware policy
 planner needed by an automatic tuner:
