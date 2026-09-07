@@ -214,10 +214,22 @@ At 19:37 CST, a non-formal eight-problem `PP2 x TP1` feasibility smoke was
 started on NPU6-7 while the existing TP2 run continued on NPU4-5. This keeps the
 user allocation at four devices. The first container attempt used individual
 device remapping and failed before model allocation because the host CANN/HCCL
-stack could not discover the remapped devices. A single retry used the host's
+stack could not discover the remapped devices. A retained diagnostic attempt
+confirmed the same pre-allocation failure; the final launch used the host's
 validated `privileged + ipc=host + ASCEND_RT_VISIBLE_DEVICES` contract.
 
-The retry initialized world size two with PP ranks zero and one, bound them to
-physical NPU6 and NPU7, and loaded 29.2025 GiB of model weights per stage. This
-proves topology startup only. It remains a concurrently executed smoke and is
-not eligible for a TP2-versus-PP2 performance claim.
+The successful launch initialized world size two with PP ranks zero and one,
+bound them to physical NPU6 and NPU7, and loaded 29.2025 GiB of model weights
+per stage. The smoke completed all eight problems and released both devices.
+Seven of eight outputs passed exact reward; mean and median per-problem latency
+were 118.8312 and 107.5987 seconds. The sample is too small for a quality claim.
+
+Five problems overlapped with the still-running TP2 baseline. Their PP2/TP2
+latency ratios were 0.8288, 0.8458, 0.8159, 0.6141, and 0.8814: a geometric
+mean of 0.7910 and median of 0.8288. The 0.6141 observation also changed output
+length from 507 to 355 tokens and is not evidence of a topology speedup. The
+other four equal- or near-equal-length observations show an initial 11.9%-18.4%
+latency reduction. This is promising feasibility evidence only: the runs were
+concurrent on sibling NPUs, only five tasks overlap, and generation trajectories
+are not fully controlled. A sequential same-device paired campaign is required
+before making a TP2-versus-PP2 performance claim.
